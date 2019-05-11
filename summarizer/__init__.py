@@ -1,0 +1,1 @@
+from summarizer.model_processors import SingleModel

@@ -6,7 +6,7 @@ from tqdm import tqdm
 from numpy import ndarray
 from typing import List
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 
 class BertParent(object):

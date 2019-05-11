@@ -34,13 +34,13 @@ class ModelProcessor(object):
         return self.run(body, ratio, min_length, max_length)
 
 
-class SingleModelProcessor(ModelProcessor):
+class SingleModel(ModelProcessor):
 
     def __init__(self, model='bert-large-uncased',
                  vector_size: int = None,
                  hidden: int=-2,
                  reduce_option: str = 'mean'):
-        super(SingleModelProcessor, self).__init__(model, vector_size, hidden, reduce_option)
+        super(SingleModel, self).__init__(model, vector_size, hidden, reduce_option)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
         hidden = self.model(content, self.hidden, self.reduce_option)

@@ -15,7 +15,10 @@ pip install bert-extractive-summarizer
 ```python
 from summarizer import SingleModel
 
-body = 'text you want to summarize'
-summary = SingleModel()(body)
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = SingleModel()
+model(body)
+model(body2)
 ```
 

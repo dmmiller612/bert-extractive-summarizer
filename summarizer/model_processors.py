@@ -3,6 +3,7 @@ from typing import List
 from summarizer.ClusterFeatures import ClusterFeatures
 from nltk import tokenize
 from abc import abstractmethod
+import logging
 
 
 class ModelProcessor(object):

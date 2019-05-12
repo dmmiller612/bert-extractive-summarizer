@@ -1,9 +1,9 @@
 from summarizer.BertParent import BertParent
 from typing import List
 from summarizer.ClusterFeatures import ClusterFeatures
-from nltk import tokenize
 from abc import abstractmethod
-import logging
+import neuralcoref
+from spacy.lang.en import English
 
 
 class ModelProcessor(object):
@@ -11,15 +11,21 @@ class ModelProcessor(object):
     def __init__(self, model='bert-large-uncased',
                  vector_size: int = None,
                  hidden: int=-2,
-                 reduce_option: str = 'mean'):
+                 reduce_option: str = 'mean',
+                 greedyness=0.45):
         self.model = BertParent(model)
         self.hidden = hidden
         self.vector_size = vector_size
         self.reduce_option = reduce_option
+        self.nlp = English()
+        self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
+        neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
 
     def process_content_sentences(self, body: str, min_length=40, max_length=600) -> List[str]:
-        sentences = tokenize.sent_tokenize(body)
-        return [c for c in sentences if len(c) > min_length and len(c) < max_length]
+        doc = self.nlp(body)._.coref_resolved
+        doc = self.nlp(doc)
+        return [c.string.strip() for c in doc.sents
+                if len(c.string.strip()) > min_length and len(c.string.strip()) < max_length]
 
     @abstractmethod
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool=True) -> List[str]:
@@ -28,7 +34,8 @@ class ModelProcessor(object):
     def run(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
             use_first: bool=True, algorithm='kmeans'):
         sentences = self.process_content_sentences(body, min_length, max_length)
-        return self.run_clusters(sentences, ratio, algorithm, use_first)
+        res = self.run_clusters(sentences, ratio, algorithm, use_first)
+        return ' '.join(res)
 
     def __call__(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
                  use_first: bool=True, algorithm='kmeans'):
@@ -40,8 +47,9 @@ class SingleModel(ModelProcessor):
     def __init__(self, model='bert-large-uncased',
                  vector_size: int = None,
                  hidden: int=-2,
-                 reduce_option: str = 'mean'):
-        super(SingleModel, self).__init__(model, vector_size, hidden, reduce_option)
+                 reduce_option: str = 'mean',
+                 greedyness=0.45):
+        super(SingleModel, self).__init__(model, vector_size, hidden, reduce_option, greedyness)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
         hidden = self.model(content, self.hidden, self.reduce_option)

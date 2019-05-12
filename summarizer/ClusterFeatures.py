@@ -1,12 +1,14 @@
 import numpy as np
+from numpy import ndarray
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import PCA
+from typing import List
 
 
 class ClusterFeatures(object):
 
-    def __init__(self, features, algorithm='kmeans', pca_k=None):
+    def __init__(self, features: ndarray, algorithm: str='kmeans', pca_k: int=None):
         if pca_k:
             self.features = PCA(n_components=pca_k).fit_transform(features)
         else:
@@ -14,7 +16,7 @@ class ClusterFeatures(object):
         self.algorithm = algorithm
         self.pca_k = pca_k
 
-    def __get_model(self, k):
+    def __get_model(self, k: int):
         if self.algorithm == 'gmm':
             return GaussianMixture(n_components=k)
         return KMeans(n_clusters=k)
@@ -41,10 +43,13 @@ class ClusterFeatures(object):
             cur_arg = -1
         return args
 
-    def cluster(self, ratio=0.1):
+    def cluster(self, ratio: float=0.1) -> List[int]:
         k = 1 if ratio * len(self.features) < 1 else int(len(self.features) * ratio)
         model = self.__get_model(k).fit(self.features)
         centroids = self.__get_centroids(model)
         cluster_args = self.__find_closest_args(centroids)
         sorted_values = sorted(cluster_args.values())
         return sorted_values
+
+    def __call__(self, ratio: float=0.1) -> List[int]:
+        return self.cluster(ratio)

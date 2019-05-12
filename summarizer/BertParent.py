@@ -26,7 +26,7 @@ class BertParent(object):
 
         self.model.eval()
 
-    def tokenize_input(self, text) -> torch.tensor:
+    def tokenize_input(self, text: str) -> torch.tensor:
         tokenized_text = self.tokenizer.tokenize(text)
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
         return torch.tensor([indexed_tokens])

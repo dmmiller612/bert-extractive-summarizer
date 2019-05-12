@@ -12,7 +12,7 @@ class ModelProcessor(object):
                  vector_size: int = None,
                  hidden: int=-2,
                  reduce_option: str = 'mean',
-                 greedyness=0.45):
+                 greedyness: float=0.45):
         self.model = BertParent(model)
         self.hidden = hidden
         self.vector_size = vector_size
@@ -32,13 +32,13 @@ class ModelProcessor(object):
         raise NotImplementedError("Must Implement run_clusters")
 
     def run(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
-            use_first: bool=True, algorithm='kmeans'):
+            use_first: bool=True, algorithm='kmeans') -> str:
         sentences = self.process_content_sentences(body, min_length, max_length)
         res = self.run_clusters(sentences, ratio, algorithm, use_first)
         return ' '.join(res)
 
     def __call__(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
-                 use_first: bool=True, algorithm='kmeans'):
+                 use_first: bool=True, algorithm='kmeans') -> str:
         return self.run(body, ratio, min_length, max_length)
 
 
@@ -48,7 +48,7 @@ class SingleModel(ModelProcessor):
                  vector_size: int = None,
                  hidden: int=-2,
                  reduce_option: str = 'mean',
-                 greedyness=0.45):
+                 greedyness: float=0.45):
         super(SingleModel, self).__init__(model, vector_size, hidden, reduce_option, greedyness)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:

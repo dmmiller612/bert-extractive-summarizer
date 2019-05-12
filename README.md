@@ -2,7 +2,9 @@
 
 This repo is the generalization of the lecture-summarizer repo. This tool utilizes the HuggingFace Pytorch BERT library 
 to run extractive summarizations. This works by first embedding the sentences, then running a clustering algorithm, finding 
-the sentences that are closest to the cluster's centroids.
+the sentences that are closest to the cluster's centroids. This library also uses coreference techniques, utilizing the 
+https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
+the neuralcoref library can be tweaked in the SingleModel class.
 
 ## Install
 ```bash
@@ -62,6 +64,25 @@ The building sold fairly quickly after being publicly placed on the market only 
 The incentive to sell the building at such a huge loss was due to the soaring rent the owners pay to Cooper Union, a New York college, for the land under the building.Still the building is among the best known in the city, even to people who have never been to New York.'
 Still the building is among the best known in the city, even to people who have never been to New York.
 """
+```
+
+## SingleModel Options
+
+```
+model = SingleModel(
+    model: str #This gets used by the hugging face bert library to load the model, you can supply a custom trained model here
+    vector_size: int # This specifies the vector size of the output of the model. If you using a hugging face model, it will automatically be set
+    hidden: int # Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
+    reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
+    greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.
+)
+
+model(
+    body: str # The string body that you want to summarize
+    ratio: float # The ratio of sentences that you want for the final summary
+    min_length: int # Parameter to specify to remove sentences that are less than 40 characters
+    max_length: int # Parameter to specify to remove sentences greater than the max length
+)
 ```
 
 

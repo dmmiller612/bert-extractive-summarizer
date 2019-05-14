@@ -10,6 +10,7 @@ the neuralcoref library can be tweaked in the SingleModel class.
 
 #### NOTE: You will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 
 
+With that in mind, the setup.py should install 2.1.3 by default.
 ```bash
 pip install spacy==2.1.3
 pip install bert-extractive-summarizer

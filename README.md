@@ -7,7 +7,11 @@ https://github.com/huggingface/neuralcoref library to resolve words in summaries
 the neuralcoref library can be tweaked in the SingleModel class.
 
 ## Install
+
+#### NOTE: You will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 
+
 ```bash
+pip install spacy==2.1.3
 pip install bert-extractive-summarizer
 ```
 

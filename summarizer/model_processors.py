@@ -13,7 +13,7 @@ class ModelProcessor(object):
                  hidden: int=-2,
                  reduce_option: str = 'mean',
                  greedyness: float=0.45):
-        self.model = BertParent(model)
+        self.model = BertParent(model, vector_size)
         self.hidden = hidden
         self.vector_size = vector_size
         self.reduce_option = reduce_option

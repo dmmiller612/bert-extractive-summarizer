@@ -15,7 +15,8 @@ class BertParent(object):
         'bert-base-uncased': (BertModel, BertTokenizer, 768),
         'bert-large-uncased': (BertModel, BertTokenizer, 1024),
         'xlnet-base-cased': (XLNetModel, XLNetTokenizer, 768),
-        'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer, 1024)
+        'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer, 1024),
+        'distilbert-base-uncased': (DistilBertModel, DistilBertTokenizer, 768)
     }
 
     def __init__(
@@ -25,6 +26,13 @@ class BertParent(object):
             base_clz: PreTrainedModel = None,
             base_tokenizer_clz: PreTrainedTokenizer = None
     ):
+        """
+        :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used
+        :param vector_size: Size of the vector that the model produces
+        :param base_clz: This is optional if a custom bert model is used
+        :param base_tokenizer_clz: Place to use custom tokenizer
+        """
+
         base_model, base_tokenizer, vec_size = self.MODELS.get(model, (None, None))
 
         if base_clz:

@@ -43,6 +43,9 @@ class ModelProcessor(object):
 
 
 class SingleModel(ModelProcessor):
+    """
+    Deprecated for naming sake.
+    """
 
     def __init__(self, model='bert-large-uncased',
                  vector_size: int = None,
@@ -59,3 +62,12 @@ class SingleModel(ModelProcessor):
                 hidden_args.insert(0,0)
         return [content[j] for j in hidden_args]
 
+
+class Summarizer(SingleModel):
+
+    def __init__(self, model='bert-large-uncased',
+                 vector_size: int = None,
+                 hidden: int=-2,
+                 reduce_option: str = 'mean',
+                 greedyness: float=0.45):
+        super(Summarizer, self).__init__(model, vector_size, hidden, reduce_option, greedyness)

@@ -1,10 +1,10 @@
 numpy==1.16.3
 torch==1.0.1
 spacy==2.1.3
-pytorch-pretrained-bert==0.6.2
+transformers==2.0.0
 Cython==0.29.10
 tqdm==4.32.2
 neuralcoref==4.0
 argparse
-sklearn
+scikit-learn
 bert-extractive-summarizer

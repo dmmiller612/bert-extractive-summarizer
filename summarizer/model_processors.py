@@ -32,8 +32,9 @@ class ModelProcessor(object):
     def run(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
             use_first: bool=True, algorithm='kmeans') -> str:
         sentences = self.process_content_sentences(body, min_length, max_length)
-        res = self.run_clusters(sentences, ratio, algorithm, use_first)
-        return ' '.join(res)
+        if sentences:
+            sentences = self.run_clusters(sentences, ratio, algorithm, use_first)
+        return ' '.join(sentences)
 
     def __call__(self, body: str, ratio: float=0.2, min_length: int=40, max_length: int=600,
                  use_first: bool=True, algorithm='kmeans') -> str:

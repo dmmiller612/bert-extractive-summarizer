@@ -41,7 +41,7 @@ class BertParent(object):
         if base_tokenizer_clz:
             base_tokenizer = base_tokenizer_clz
 
-        self.model = base_model.from_pretrained(model)
+        self.model = base_model.from_pretrained(model, output_hidden_states=True)
         self.tokenizer = base_tokenizer.from_pretrained(model)
 
         self.vector_size = vec_size if not vector_size else vector_size
@@ -61,15 +61,15 @@ class BertParent(object):
     ) -> ndarray:
 
         tokens_tensor = self.tokenize_input(text)
-        hidden_states, pooled = self.model(tokens_tensor)
+        pooled, hidden_states = self.model(tokens_tensor)[-2:]
 
         if -1 > hidden > -12:
 
             if reduce_option == 'max':
-                pooled = hidden_states[hidden].max(dim=1)
+                pooled = hidden_states[hidden].max(dim=1)[0]
 
             elif reduce_option == 'median':
-                pooled = hidden_states[hidden].median(dim=1)
+                pooled = hidden_states[hidden].median(dim=1)[0]
 
             else:
                 pooled = hidden_states[hidden].mean(dim=1)

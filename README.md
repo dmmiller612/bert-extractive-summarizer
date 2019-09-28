@@ -1,6 +1,6 @@
 # Bert Extractive Summarizer
 
-This repo is the generalization of the lecture-summarizer repo. This tool utilizes the HuggingFace Pytorch BERT library 
+This repo is the generalization of the lecture-summarizer repo. This tool utilizes the HuggingFace Pytorch transformers library
 to run extractive summarizations. This works by first embedding the sentences, then running a clustering algorithm, finding 
 the sentences that are closest to the cluster's centroids. This library also uses coreference techniques, utilizing the 
 https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
@@ -13,18 +13,18 @@ the neuralcoref library can be tweaked in the SingleModel class.
 With that in mind, the setup.py should install 2.1.3 by default.
 ```bash
 pip install spacy==2.1.3
-pip install bert-extractive-summarizer
+pip install transformers
 ```
 
 ## How to Use
 
 #### Simple Example
 ```python
-from summarizer import SingleModel
+from summarizer import Summarizer
 
 body = 'Text body that you want to summarize with BERT'
 body2 = 'Something else you want to summarize with BERT'
-model = SingleModel()
+model = Summarizer()
 model(body)
 model(body2)
 ```
@@ -32,7 +32,7 @@ model(body2)
 #### Large Example
 
 ```python
-from summarizer import SingleModel
+from summarizer import Summarizer
 
 body = '''
 The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price.
@@ -59,7 +59,7 @@ Walter Chrysler had set out to build the tallest building in the world, a compet
 Once the competitor could rise no higher, the spire of the Chrysler building was raised into view, giving it the title.
 '''
 
-model = SingleModel()
+model = Summarizer()
 result = model(body, min_length=60)
 full = ''.join(result)
 print(full)
@@ -71,12 +71,11 @@ Still the building is among the best known in the city, even to people who have 
 """
 ```
 
-## SingleModel Options
+## Summarizer Options
 
 ```
 model = SingleModel(
     model: str #This gets used by the hugging face bert library to load the model, you can supply a custom trained model here
-    vector_size: int # This specifies the vector size of the output of the model. If you using a hugging face model, it will automatically be set
     hidden: int # Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
     reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
     greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.

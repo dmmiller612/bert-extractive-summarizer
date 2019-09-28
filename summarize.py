@@ -1,4 +1,4 @@
-from summarizer import SingleModel
+from summarizer import Summarizer
 import argparse
 
 
@@ -6,7 +6,6 @@ def run():
     parser = argparse.ArgumentParser(description='Process and summarize lectures')
     parser.add_argument('-path', dest='path', default=None, help='File path of lecture')
     parser.add_argument('-model', dest='model', default='bert-large-uncased', help='')
-    parser.add_argument('-vector-size', dest='vector_size', default=None, help='Size of the embedding vector')
     parser.add_argument('-hidden', dest='hidden', default=-2, help='Which hidden layer to use from Bert')
     parser.add_argument('-reduce-option', dest='reduce_option', default='mean', help='How to reduce the hidden layer from bert')
     parser.add_argument('-greedyness', dest='greedyness', help='Greedyness of the NeuralCoref model', default=0.45)
@@ -18,9 +17,8 @@ def run():
     with open(args.path) as d:
         text_data = d.read()
 
-    model = SingleModel(
+    model = Summarizer(
         model=args.model,
-        vector_size=args.vector_size,
         hidden=args.hidden,
         reduce_option=args.reduce_option
     )

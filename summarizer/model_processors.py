@@ -9,13 +9,11 @@ from spacy.lang.en import English
 class ModelProcessor(object):
 
     def __init__(self, model='bert-large-uncased',
-                 vector_size: int = None,
                  hidden: int=-2,
                  reduce_option: str = 'mean',
                  greedyness: float=0.45):
-        self.model = BertParent(model, vector_size)
+        self.model = BertParent(model)
         self.hidden = hidden
-        self.vector_size = vector_size
         self.reduce_option = reduce_option
         self.nlp = English()
         self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
@@ -43,13 +41,15 @@ class ModelProcessor(object):
 
 
 class SingleModel(ModelProcessor):
+    """
+    Deprecated for naming sake.
+    """
 
     def __init__(self, model='bert-large-uncased',
-                 vector_size: int = None,
                  hidden: int=-2,
                  reduce_option: str = 'mean',
                  greedyness: float=0.45):
-        super(SingleModel, self).__init__(model, vector_size, hidden, reduce_option, greedyness)
+        super(SingleModel, self).__init__(model, hidden, reduce_option, greedyness)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
         hidden = self.model(content, self.hidden, self.reduce_option)
@@ -59,3 +59,14 @@ class SingleModel(ModelProcessor):
                 hidden_args.insert(0,0)
         return [content[j] for j in hidden_args]
 
+
+class Summarizer(SingleModel):
+
+    def __init__(
+        self,
+        model='bert-large-uncased',
+        hidden: int=-2,
+        reduce_option: str = 'mean',
+        greedyness: float=0.45
+    ):
+        super(Summarizer, self).__init__(model, hidden, reduce_option, greedyness)

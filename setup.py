@@ -11,7 +11,7 @@ setup(name='bert-extractive-summarizer',
       download_url='https://github.com/dmmiller612/bert-extractive-summarizer/archive/0.1.4.tar.gz',
       author='Derek Miller',
       author_email='dmmiller612@gmail.com',
-      install_requires=['pytorch-pretrained-bert', 'sklearn', 'neuralcoref', 'spacy==2.1.3'],
+      install_requires=['transformers', 'sklearn', 'neuralcoref', 'spacy==2.1.3'],
       license='MIT',
       packages=find_packages(),
       zip_safe=False)

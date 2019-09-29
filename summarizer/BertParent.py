@@ -1,4 +1,4 @@
-from pytorch_transformers import *
+from transformers import *
 import logging
 import torch
 import numpy as np

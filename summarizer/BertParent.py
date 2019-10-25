@@ -21,25 +21,27 @@ class BertParent(object):
     def __init__(
         self,
         model: str,
-        base_clz: PreTrainedModel=None,
-        base_tokenizer_clz: PreTrainedTokenizer=None
+        custom_model: PreTrainedModel=None,
+        custom_tokenizer: PreTrainedTokenizer=None
     ):
         """
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used
-        :param base_clz: This is optional if a custom bert model is used
-        :param base_tokenizer_clz: Place to use custom tokenizer
+        :param custom_model: This is optional if a custom bert model is used
+        :param custom_tokenizer: Place to use custom tokenizer
         """
 
         base_model, base_tokenizer = self.MODELS.get(model, (None, None))
 
-        if base_clz:
-            base_model = base_clz
+        if custom_model:
+            self.model = custom_model
+        else:
+            self.model = base_model.from_pretrained(model, output_hidden_states=True)
 
-        if base_tokenizer_clz:
-            base_tokenizer = base_tokenizer_clz
+        if custom_tokenizer:
+            self.tokenizer = custom_tokenizer
+        else:
+            self.tokenizer = base_tokenizer.from_pretrained(model)
 
-        self.model = base_model.from_pretrained(model, output_hidden_states=True)
-        self.tokenizer = base_tokenizer.from_pretrained(model)
         self.model.eval()
 
     def tokenize_input(self, text: str) -> torch.tensor:

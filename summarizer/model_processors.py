@@ -4,6 +4,7 @@ from summarizer.ClusterFeatures import ClusterFeatures
 from abc import abstractmethod
 import neuralcoref
 from spacy.lang.en import English
+import numpy as np
 
 
 class ModelProcessor(object):
@@ -14,12 +15,15 @@ class ModelProcessor(object):
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
-        language=English
+        language=English,
+        random_state: int = 12345
     ):
+        np.random.seed(random_state)
         self.model = BertParent(model)
         self.hidden = hidden
         self.reduce_option = reduce_option
         self.nlp = language()
+        self.random_state = random_state
         self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
         neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
 
@@ -64,13 +68,15 @@ class SingleModel(ModelProcessor):
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
-        language=English
+        language=English,
+        random_state: int=12345
     ):
-        super(SingleModel, self).__init__(model, hidden, reduce_option, greedyness, language=language)
+        super(SingleModel, self).__init__(model, hidden, reduce_option,
+                                          greedyness, language=language, random_state=random_state)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
         hidden = self.model(content, self.hidden, self.reduce_option)
-        hidden_args = ClusterFeatures(hidden, algorithm).cluster(ratio)
+        hidden_args = ClusterFeatures(hidden, algorithm, random_state=self.random_state).cluster(ratio)
 
         if use_first:
             if hidden_args[0] != 0:
@@ -87,6 +93,7 @@ class Summarizer(SingleModel):
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
-        language=English
+        language=English,
+        random_state: int=12345
     ):
-        super(Summarizer, self).__init__(model, hidden, reduce_option, greedyness, language)
+        super(Summarizer, self).__init__(model, hidden, reduce_option, greedyness, language, random_state)

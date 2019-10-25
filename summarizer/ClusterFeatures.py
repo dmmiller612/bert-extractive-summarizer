@@ -12,7 +12,8 @@ class ClusterFeatures(object):
         self,
         features: ndarray,
         algorithm: str = 'kmeans',
-        pca_k: int = None
+        pca_k: int = None,
+        random_state: int = 12345
     ):
 
         if pca_k:
@@ -22,11 +23,12 @@ class ClusterFeatures(object):
 
         self.algorithm = algorithm
         self.pca_k = pca_k
+        self.random_state = random_state
 
-    def __get_model(self, k: int, random_state=12345):
+    def __get_model(self, k: int):
         if self.algorithm == 'gmm':
-            return GaussianMixture(n_components=k, random_state=random_state)
-        return KMeans(n_clusters=k, random_state=random_state)
+            return GaussianMixture(n_components=k, random_state=self.random_state)
+        return KMeans(n_clusters=k, random_state=self.random_state)
 
     def __get_centroids(self, model):
         if self.algorithm == 'gmm':

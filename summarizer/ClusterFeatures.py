@@ -9,11 +9,12 @@ from typing import List
 class ClusterFeatures(object):
 
     def __init__(
-            self,
-            features: ndarray,
-            algorithm: str = 'kmeans',
-            pca_k: int = None
+        self,
+        features: ndarray,
+        algorithm: str = 'kmeans',
+        pca_k: int = None
     ):
+
         if pca_k:
             self.features = PCA(n_components=pca_k).fit_transform(features)
         else:
@@ -22,10 +23,10 @@ class ClusterFeatures(object):
         self.algorithm = algorithm
         self.pca_k = pca_k
 
-    def __get_model(self, k: int):
+    def __get_model(self, k: int, random_state=12345):
         if self.algorithm == 'gmm':
-            return GaussianMixture(n_components=k)
-        return KMeans(n_clusters=k)
+            return GaussianMixture(n_components=k, random_state=random_state)
+        return KMeans(n_clusters=k, random_state=random_state)
 
     def __get_centroids(self, model):
         if self.algorithm == 'gmm':

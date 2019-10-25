@@ -53,7 +53,7 @@ class Parser(object):
 
 
 @app.route('/summarize', methods=['POST'])
-def convert_udacity():
+def convert_raw_text():
     ratio = float(request.args.get('ratio', 0.2))
     min_length = int(request.args.get('min_length', 25))
     max_length = int(request.args.get('max_length', 500))
@@ -80,6 +80,8 @@ if __name__ == '__main__':
     parser.add_argument('-host', dest='host', help='', default='0.0.0.0')
 
     args = parser.parse_args()
+
+    print(f"Using Model: {args.model}")
 
     summarizer = Summarizer(args.model, int(args.hidden), args.reduce, float(args.greediness))
 

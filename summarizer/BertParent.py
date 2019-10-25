@@ -19,10 +19,10 @@ class BertParent(object):
     }
 
     def __init__(
-            self,
-            model: str,
-            base_clz: PreTrainedModel = None,
-            base_tokenizer_clz: PreTrainedTokenizer = None
+        self,
+        model: str,
+        base_clz: PreTrainedModel=None,
+        base_tokenizer_clz: PreTrainedTokenizer=None
     ):
         """
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used
@@ -43,16 +43,21 @@ class BertParent(object):
         self.model.eval()
 
     def tokenize_input(self, text: str) -> torch.tensor:
+        """
+        Tokenizes the text input.
+        :param text: Text to tokenize
+        :return: Returns a torch tensor
+        """
         tokenized_text = self.tokenizer.tokenize(text)
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
         return torch.tensor([indexed_tokens])
 
     def extract_embeddings(
-            self,
-            text: str,
-            hidden: int=-2,
-            squeeze: bool=False,
-            reduce_option: str ='mean'
+        self,
+        text: str,
+        hidden: int=-2,
+        squeeze: bool=False,
+        reduce_option: str ='mean'
     ) -> ndarray:
 
         tokens_tensor = self.tokenize_input(text)
@@ -75,20 +80,21 @@ class BertParent(object):
         return pooled
 
     def create_matrix(
-            self,
-            content: List[str],
-            hidden: int=-2,
-            reduce_option: str = 'mean'
+        self,
+        content: List[str],
+        hidden: int=-2,
+        reduce_option: str = 'mean'
     ) -> ndarray:
+
         return np.asarray([
             np.squeeze(self.extract_embeddings(t, hidden=hidden, reduce_option=reduce_option).data.numpy())
             for t in content
         ])
 
     def __call__(
-            self,
-            content: List[str],
-            hidden: int= -2,
-            reduce_option: str = 'mean'
+        self,
+        content: List[str],
+        hidden: int= -2,
+        reduce_option: str = 'mean'
     ) -> ndarray:
         return self.create_matrix(content, hidden, reduce_option)

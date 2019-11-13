@@ -5,6 +5,7 @@ from abc import abstractmethod
 import neuralcoref
 from spacy.lang.en import English
 import numpy as np
+from transformers import PreTrainedModel, PreTrainedTokenizer
 
 
 class ModelProcessor(object):
@@ -12,6 +13,8 @@ class ModelProcessor(object):
     def __init__(
         self,
         model='bert-large-uncased',
+        custom_model: PreTrainedModel = None,
+        custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
@@ -19,7 +22,7 @@ class ModelProcessor(object):
         random_state: int = 12345
     ):
         np.random.seed(random_state)
-        self.model = BertParent(model)
+        self.model = BertParent(model, custom_model, custom_tokenizer)
         self.hidden = hidden
         self.reduce_option = reduce_option
         self.nlp = language()
@@ -65,13 +68,15 @@ class SingleModel(ModelProcessor):
     def __init__(
         self,
         model='bert-large-uncased',
+        custom_model: PreTrainedModel = None,
+        custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
         language=English,
         random_state: int=12345
     ):
-        super(SingleModel, self).__init__(model, hidden, reduce_option,
+        super(SingleModel, self).__init__(model, custom_model, custom_tokenizer, hidden, reduce_option,
                                           greedyness, language=language, random_state=random_state)
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
@@ -90,10 +95,12 @@ class Summarizer(SingleModel):
     def __init__(
         self,
         model='bert-large-uncased',
+        custom_model: PreTrainedModel = None,
+        custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int=-2,
         reduce_option: str = 'mean',
         greedyness: float=0.45,
         language=English,
         random_state: int=12345
     ):
-        super(Summarizer, self).__init__(model, hidden, reduce_option, greedyness, language, random_state)
+        super(Summarizer, self).__init__(model, custom_model, custom_tokenizer, hidden, reduce_option, greedyness, language, random_state)

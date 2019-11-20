@@ -83,6 +83,11 @@ if __name__ == '__main__':
 
     print(f"Using Model: {args.model}")
 
-    summarizer = Summarizer(args.model, int(args.hidden), args.reduce, float(args.greediness))
+    summarizer = Summarizer(
+        model=args.model,
+        hidden=int(args.hidden),
+        reduce_option=args.reduce,
+        greedyness=float(args.greediness)
+    )
 
     app.run(host=args.host, port=int(args.port))

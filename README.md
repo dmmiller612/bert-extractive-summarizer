@@ -8,6 +8,10 @@ the neuralcoref library can be tweaked in the SingleModel class.
 
 Paper: https://arxiv.org/abs/1906.04165
 
+### Try the Online Demo:
+
+[Distill Bert Summarization Demo](https://smrzr.io)
+
 ## Install
 
 #### NOTE: You will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 

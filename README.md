@@ -167,4 +167,8 @@ Response:
 }
 ```
 
+### Deploy through Cortex
+
+https://github.com/cortexlabs/cortex/tree/master/examples/pytorch/text-summarizer
+
 

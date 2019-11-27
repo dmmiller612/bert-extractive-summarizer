@@ -169,6 +169,8 @@ Response:
 
 ### Deploy through Cortex
 
+The summarization library can also be deployed through Cortex. An example can be seen in the link below.
+
 https://github.com/cortexlabs/cortex/tree/master/examples/pytorch/text-summarizer
 
 

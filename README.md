@@ -76,7 +76,7 @@ print(full)
 """
 The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price. 
 The building sold fairly quickly after being publicly placed on the market only two months ago.
-The incentive to sell the building at such a huge loss was due to the soaring rent the owners pay to Cooper Union, a New York college, for the land under the building.Still the building is among the best known in the city, even to people who have never been to New York.'
+The incentive to sell the building at such a huge loss was due to the soaring rent the owners pay to Cooper Union, a New York college, for the land under the building.'
 Still the building is among the best known in the city, even to people who have never been to New York.
 """
 ```

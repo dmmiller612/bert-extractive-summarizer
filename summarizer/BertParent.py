@@ -15,7 +15,9 @@ class BertParent(object):
         'bert-large-uncased': (BertModel, BertTokenizer),
         'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
         'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
-        'distilbert-base-uncased': (DistilBertModel, DistilBertTokenizer)
+        'distilbert-base-uncased': (DistilBertModel, DistilBertTokenizer),
+        'albert-base-v1': (AlbertModel, AlbertTokenizer),
+        'albert-large-v1': (AlbertModel, AlbertTokenizer)
     }
 
     def __init__(

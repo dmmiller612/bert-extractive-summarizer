@@ -14,12 +14,16 @@ Paper: https://arxiv.org/abs/1906.04165
 
 ## Install
 
+```bash
+pip install bert-extractive-summarizer
+```
+
 #### NOTE: You will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 
 
 With that in mind, the setup.py should install 2.1.3 by default.
 ```bash
 pip install spacy==2.1.3
-pip install transformers
+pip install transformers==2.2.0
 ```
 
 ## How to Use

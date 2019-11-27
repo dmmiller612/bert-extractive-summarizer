@@ -87,6 +87,8 @@ Still the building is among the best known in the city, even to people who have 
 model = Summarizer(
     model: str #This gets used by the hugging face bert library to load the model, you can supply a custom trained model here
     hidden: int # Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
+    custom_model: Custom model can be supplied here,
+    custom_tokenizer: Custom tokenizer can be supplied here,
     reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
     greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.
 )

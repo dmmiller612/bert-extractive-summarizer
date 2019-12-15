@@ -1,12 +1,11 @@
-from summarizer.BertParent import BertParent
+from summarizer.bert_parent import BertParent
 from typing import List
-from summarizer.ClusterFeatures import ClusterFeatures
+from summarizer.cluster_features import ClusterFeatures
 from abc import abstractmethod
 import neuralcoref
 from spacy.lang.en import English
 import numpy as np
 from transformers import *
-from transformers import BertModel
 
 
 class ModelProcessor(object):

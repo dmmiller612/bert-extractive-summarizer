@@ -3,7 +3,7 @@ testdir = os.path.dirname(__file__)
 srcdir = '../summarizer'
 sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
 
-from summarizer import Summarizer
+from summarizer import Summarizer, TransformerSummarizer
 import unittest
 from transformers import AlbertTokenizer, AlbertModel
 
@@ -15,6 +15,8 @@ class SummarizationTest(unittest.TestCase):
     albert_model = AlbertModel.from_pretrained('albert-base-v1', output_hidden_states=True)
     albert_tokenizer = AlbertTokenizer.from_pretrained('albert-base-v1')
     custom_summarizer = Summarizer(custom_model=albert_model, custom_tokenizer=albert_tokenizer)
+
+    albert_transformer = TransformerSummarizer('Albert', 'albert-base-v1')
 
     PASSAGE = '''
     The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price.
@@ -64,6 +66,11 @@ class SummarizationTest(unittest.TestCase):
     def test_custom(self):
         res = self.albert_summarizer(self.PASSAGE)
         self.assertEqual(res, "The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price. Mubadala, an Abu Dhabi investment fund, purchased 90% of the building for $800 million in 2008. Meantime, rents in the building itself are not rising nearly that fast. Still there have been a number of high profile skyscrapers purchased for top dollar in recent years, including the Waldorf Astoria hotel, which Chinese firm Anbang Insurance purchased in 2016 for nearly $2 billion, and the Willis Tower in Chicago, which was formerly known as Sears Tower, once the world's tallest.")
+
+    def test_transformer_clz(self):
+        res = self.albert_transformer(self.PASSAGE)
+        self.assertEqual(res, "The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price. Mubadala, an Abu Dhabi investment fund, purchased 90% of the building for $800 million in 2008. Meantime, rents in the building itself are not rising nearly that fast. Still there have been a number of high profile skyscrapers purchased for top dollar in recent years, including the Waldorf Astoria hotel, which Chinese firm Anbang Insurance purchased in 2016 for nearly $2 billion, and the Willis Tower in Chicago, which was formerly known as Sears Tower, once the world's tallest.")
+
 
 if __name__ == '__main__':
     unittest.main()

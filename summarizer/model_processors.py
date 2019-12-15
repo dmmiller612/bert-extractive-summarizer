@@ -169,9 +169,6 @@ class TransformerSummarizer(SingleModel):
         'XLNet': (XLNetModel, XLNetTokenizer),
         'XLM': (XLMModel, XLMTokenizer),
         'DistilBert': (DistilBertModel, DistilBertTokenizer),
-        'Roberta': (RobertaModel, RobertaTokenizer),
-        'Albert': (AlbertModel, AlbertTokenizer),
-        'Camembert': (CamembertModel, CamembertTokenizer)
     }
 
     def __init__(
@@ -185,6 +182,13 @@ class TransformerSummarizer(SingleModel):
         language=English,
         random_state: int = 12345
     ):
+        try:
+            self.MODEL_DICT['Roberta'] = (RobertaModel, RobertaTokenizer)
+            self.MODEL_DICT['Albert'] = (AlbertModel, AlbertTokenizer)
+            self.MODEL_DICT['Camembert'] = (CamembertModel, CamembertTokenizer)
+        except Exception as e:
+            pass # older transformer version
+
         model_clz, tokenizer_clz = self.MODEL_DICT[transformer_type]
         model = model_clz.from_pretrained(transformer_model_key, output_hidden_states=True)
         tokenizer = tokenizer_clz.from_pretrained(

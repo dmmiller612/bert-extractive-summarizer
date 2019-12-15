@@ -5,7 +5,8 @@ from abc import abstractmethod
 import neuralcoref
 from spacy.lang.en import English
 import numpy as np
-from transformers import PreTrainedModel, PreTrainedTokenizer
+from transformers import *
+from transformers import BertModel
 
 
 class ModelProcessor(object):
@@ -154,4 +155,41 @@ class Summarizer(SingleModel):
         """
         super(Summarizer, self).__init__(
             model, custom_model, custom_tokenizer, hidden, reduce_option, greedyness, language, random_state
+        )
+
+
+class TransformerSummarizer(SingleModel):
+
+    MODEL_DICT = {
+        'Bert': (BertModel, BertTokenizer),
+        'OpenAIGPT': (OpenAIGPTModel, OpenAIGPTTokenizer),
+        'GPT2': (GPT2Model, GPT2Tokenizer),
+        'CTRL': (CTRLModel, CTRLTokenizer),
+        'TransfoXL': (TransfoXLModel, TransfoXLTokenizer),
+        'XLNet': (XLNetModel, XLNetTokenizer),
+        'XLM': (XLMModel, XLMTokenizer),
+        'DistilBert': (DistilBertModel, DistilBertTokenizer),
+        'Roberta': (RobertaModel, RobertaTokenizer),
+        'Albert': (AlbertModel, AlbertTokenizer),
+        'Camembert': (CamembertModel, CamembertTokenizer)
+    }
+
+    def __init__(
+        self,
+        transformer_type: str = 'Bert',
+        transformer_model_key: str = 'bert-base-uncased',
+        transformer_tokenizer_key: str = None,
+        hidden: int = -2,
+        reduce_option: str = 'mean',
+        greedyness: float = 0.45,
+        language=English,
+        random_state: int = 12345
+    ):
+        model_clz, tokenizer_clz = self.MODEL_DICT[transformer_type]
+        model = model_clz.from_pretrained(transformer_model_key, output_hidden_states=True)
+        tokenizer = tokenizer_clz.from_pretrained(
+            transformer_tokenizer_key if transformer_tokenizer_key is not None else transformer_model_key
+        )
+        super().__init__(
+            None, model, tokenizer, hidden, reduce_option, greedyness, language, random_state
         )

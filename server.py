@@ -87,7 +87,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.transformer_type is not None:
+        print(f"Using Model: {args.transformer_type}")
         assert args.transformer_key is not None, 'Transformer Key cannot be none with the transformer type'
+
         summarizer = TransformerSummarizer(
             transformer_type=args.transformer_type,
             transformer_model_key=args.transformer_key,
@@ -96,13 +98,14 @@ if __name__ == '__main__':
             greedyness=float(args.greediness)
         )
 
-    print(f"Using Model: {args.model}")
+    else:
+        print(f"Using Model: {args.model}")
 
-    summarizer = Summarizer(
-        model=args.model,
-        hidden=int(args.hidden),
-        reduce_option=args.reduce,
-        greedyness=float(args.greediness)
-    )
+        summarizer = Summarizer(
+            model=args.model,
+            hidden=int(args.hidden),
+            reduce_option=args.reduce,
+            greedyness=float(args.greediness)
+        )
 
     app.run(host=args.host, port=int(args.port))

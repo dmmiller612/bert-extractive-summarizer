@@ -1,1 +1,1 @@
-from summarizer.model_processors import Summarizer, SingleModel
+from summarizer.model_processors import Summarizer, SingleModel, TransformerSummarizer

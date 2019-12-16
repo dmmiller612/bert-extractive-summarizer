@@ -16,6 +16,8 @@ RUN apt-get update && \
 
 RUN mkdir -p /opt/service
 COPY requirements.txt /opt/service
+COPY summarizer /opt/service/summarizer
+COPY tests /opt/service/tests
 WORKDIR /opt/service
 
 RUN pip3 install --upgrade pip

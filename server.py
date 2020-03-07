@@ -94,8 +94,7 @@ if __name__ == '__main__':
             transformer_type=args.transformer_type,
             transformer_model_key=args.transformer_key,
             hidden=int(args.hidden),
-            reduce_option=args.reduce,
-            greedyness=float(args.greediness)
+            reduce_option=args.reduce
         )
 
     else:
@@ -104,8 +103,7 @@ if __name__ == '__main__':
         summarizer = Summarizer(
             model=args.model,
             hidden=int(args.hidden),
-            reduce_option=args.reduce,
-            greedyness=float(args.greediness)
+            reduce_option=args.reduce
         )
 
     app.run(host=args.host, port=int(args.port))

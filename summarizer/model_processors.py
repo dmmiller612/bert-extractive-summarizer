@@ -1,9 +1,8 @@
 from summarizer.bert_parent import BertParent
-from typing import List
 from summarizer.cluster_features import ClusterFeatures
+from summarizer.sentence_handler import SentenceHandler
+from typing import List
 from abc import abstractmethod
-import neuralcoref
-from spacy.lang.en import English
 import numpy as np
 from transformers import *
 
@@ -17,8 +16,7 @@ class ModelProcessor(object):
         custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int = -2,
         reduce_option: str = 'mean',
-        greedyness: float=0.45,
-        language = English,
+        sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345
     ):
         """
@@ -29,8 +27,7 @@ class ModelProcessor(object):
         :param custom_tokenizer: If you have a custom tokenizer, you can add the tokenizer here.
         :param hidden: This signifies which layer of the BERT model you would like to use as embeddings.
         :param reduce_option: Given the output of the bert model, this param determines how you want to reduce results.
-        :param greedyness: associated with the neuralcoref library. Determines how greedy coref should be.
-        :param language: Which language to use for training.
+        :param sentence_handler: The handler to process sentences.
         :param random_state: The random state to reproduce summarizations.
         """
 
@@ -38,10 +35,8 @@ class ModelProcessor(object):
         self.model = BertParent(model, custom_model, custom_tokenizer)
         self.hidden = hidden
         self.reduce_option = reduce_option
-        self.nlp = language()
+        self.sentence_handler = sentence_handler
         self.random_state = random_state
-        self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
-        neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
 
     def process_content_sentences(self, body: str, min_length:int = 40, max_length: int = 600) -> List[str]:
         """
@@ -78,7 +73,18 @@ class ModelProcessor(object):
         use_first: bool = True,
         algorithm: str ='kmeans'
     ) -> str:
-        sentences = self.process_content_sentences(body, min_length, max_length)
+        """
+        Preprocesses the sentences, runs the clusters to find the centroids, then combines the sentences.
+
+        :param body: The raw string body to process
+        :param ratio: Ratio of sentences to use
+        :param min_length: Minimum length of sentence candidates to utilize for the summary.
+        :param max_length: Maximum length of sentence candidates to utilize for the summary
+        :param use_first: Whether or not to use the first sentence
+        :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
+        :return: A summary sentence
+        """
+        sentences = self.sentence_handler(body, min_length, max_length)
 
         if sentences:
             sentences = self.run_clusters(sentences, ratio, algorithm, use_first)
@@ -94,6 +100,19 @@ class ModelProcessor(object):
         use_first: bool = True,
         algorithm: str = 'kmeans'
     ) -> str:
+        """
+        (utility that wraps around the run function)
+
+        Preprocesses the sentences, runs the clusters to find the centroids, then combines the sentences.
+
+        :param body: The raw string body to process
+        :param ratio: Ratio of sentences to use
+        :param min_length: Minimum length of sentence candidates to utilize for the summary.
+        :param max_length: Maximum length of sentence candidates to utilize for the summary
+        :param use_first: Whether or not to use the first sentence
+        :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
+        :return: A summary sentence
+        """
         return self.run(body, ratio, min_length, max_length, algorithm=algorithm, use_first=use_first)
 
 
@@ -109,12 +128,14 @@ class SingleModel(ModelProcessor):
         custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int=-2,
         reduce_option: str = 'mean',
-        greedyness: float=0.45,
-        language=English,
+        sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int=12345
     ):
-        super(SingleModel, self).__init__(model, custom_model, custom_tokenizer, hidden, reduce_option,
-                                          greedyness, language=language, random_state=random_state)
+        super(SingleModel, self).__init__(
+            model=model, custom_model=custom_model, custom_tokenizer=custom_tokenizer,
+            hidden=hidden, reduce_option=reduce_option,
+            sentence_handler=sentence_handler, random_state=random_state
+        )
 
     def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
         hidden = self.model(content, self.hidden, self.reduce_option)
@@ -136,8 +157,7 @@ class Summarizer(SingleModel):
         custom_tokenizer: PreTrainedTokenizer = None,
         hidden: int = -2,
         reduce_option: str = 'mean',
-        greedyness: float = 0.45,
-        language=English,
+        sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345
     ):
         """
@@ -153,7 +173,7 @@ class Summarizer(SingleModel):
         :param random_state: The random state to reproduce summarizations.
         """
         super(Summarizer, self).__init__(
-            model, custom_model, custom_tokenizer, hidden, reduce_option, greedyness, language, random_state
+            model, custom_model, custom_tokenizer, hidden, reduce_option, sentence_handler, random_state
         )
 
 
@@ -177,8 +197,7 @@ class TransformerSummarizer(SingleModel):
         transformer_tokenizer_key: str = None,
         hidden: int = -2,
         reduce_option: str = 'mean',
-        greedyness: float = 0.45,
-        language=English,
+        sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345
     ):
         try:
@@ -194,5 +213,5 @@ class TransformerSummarizer(SingleModel):
             transformer_tokenizer_key if transformer_tokenizer_key is not None else transformer_model_key
         )
         super().__init__(
-            None, model, tokenizer, hidden, reduce_option, greedyness, language, random_state
+            None, model, tokenizer, hidden, reduce_option, sentence_handler, random_state
         )

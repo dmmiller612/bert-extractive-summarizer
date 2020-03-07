@@ -10,6 +10,10 @@ logging.basicConfig(level=logging.WARNING)
 
 class BertParent(object):
 
+    """
+    Base handler for BERT models.
+    """
+
     MODELS = {
         'bert-base-uncased': (BertModel, BertTokenizer),
         'bert-large-uncased': (BertModel, BertTokenizer),
@@ -49,6 +53,7 @@ class BertParent(object):
     def tokenize_input(self, text: str) -> torch.tensor:
         """
         Tokenizes the text input.
+
         :param text: Text to tokenize
         :return: Returns a torch tensor
         """
@@ -63,6 +68,16 @@ class BertParent(object):
         squeeze: bool=False,
         reduce_option: str ='mean'
     ) -> ndarray:
+
+        """
+        Extracts the embeddings for the given text
+
+        :param text: The text to extract embeddings for.
+        :param hidden: The hidden layer to use for a readout handler
+        :param squeeze: If we should squeeze the outputs (required for some layers)
+        :param reduce_option: How we should reduce the items.
+        :return: A numpy array.
+        """
 
         tokens_tensor = self.tokenize_input(text)
         pooled, hidden_states = self.model(tokens_tensor)[-2:]
@@ -89,6 +104,14 @@ class BertParent(object):
         hidden: int=-2,
         reduce_option: str = 'mean'
     ) -> ndarray:
+        """
+        Create matrix from the embeddings
+
+        :param content: The list of sentences
+        :param hidden: Which hidden layer to use
+        :param reduce_option: The reduce option to run.
+        :return: A numpy array matrix of the given content.
+        """
 
         return np.asarray([
             np.squeeze(self.extract_embeddings(t, hidden=hidden, reduce_option=reduce_option).data.numpy())

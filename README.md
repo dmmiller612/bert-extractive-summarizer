@@ -26,6 +26,7 @@ pip install neuralcoref
 ```
 
 #### Coreference functionality with neuralcoref requires a spaCy model, which has to be downloaded separately. 
+
 Example: installing small (11 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models))
 ```bash
 python -m spacy download en_core_web_sm
@@ -57,6 +58,25 @@ handler = CoreferenceHandler(greedyness=.4)
 body = 'Text body that you want to summarize with BERT'
 body2 = 'Something else you want to summarize with BERT'
 model = Summarizer(sentence_handler=handler)
+model(body)
+model(body2)
+```
+
+#### Simple Example with custom model (we alwsys have to set output_hidden_states=True in model config)
+```python
+from transformers import *
+
+# Load model, model config and tokenizer via Transformers
+custom_config = AutoConfig.from_pretrained('allenai/scibert_scivocab_uncased')
+custom_config.output_hidden_states=True
+custom_tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+custom_model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased', config=custom_config)
+
+from summarizer import Summarizer
+
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = Summarizer(custom_model=custom_model, custom_tokenizer=custom_tokenizer)
 model(body)
 model(body2)
 ```

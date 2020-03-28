@@ -18,11 +18,16 @@ Paper: https://arxiv.org/abs/1906.04165
 pip install bert-extractive-summarizer
 ```
 
-#### NOTE: If you are using coreference, you will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 
+#### We use spaCy 2.1.0 by default to support neuralcoref 4.0. If you want to use the latest spaCy, you'll either have to build neuralcoref 4.0 from source ([url=https://github.com/huggingface/neuralcoref/issues/197][details]) or don't use coreference resolution at all.
 ```bash
-pip install spacy
-pip install transformers==2.2.0
+pip install spacy==2.1.0
+pip install transformers
+pip install neuralcoref
 ```
+
+#### neuralcoref requires a spaCy model, which has to be installed separately. Example: small (11 Mb) English model
+```bash
+python -m spacy download en_core_web_sm
 
 ## How to Use
 
@@ -33,6 +38,23 @@ from summarizer import Summarizer
 body = 'Text body that you want to summarize with BERT'
 body2 = 'Something else you want to summarize with BERT'
 model = Summarizer()
+model(body)
+model(body2)
+```
+
+#### Simple Example with coreference
+```python
+from summarizer import Summarizer
+from summarizer.coreference_handler import CoreferenceHandler
+
+handler = CoreferenceHandler(greedyness=.4)
+# How coreference works:
+# >>>handler.process('''My sister has a dog. She loves him.''', min_length=2)
+# ['My sister has a dog.', 'My sister loves a dog.']
+
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = Summarizer(sentence_handler=handler)
 model(body)
 model(body2)
 ```
@@ -89,6 +111,7 @@ model = Summarizer(
     custom_tokenizer: Custom tokenizer can be supplied here,
     reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
     greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.
+    sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass CoreferenceHandler instance
 )
 
 model(

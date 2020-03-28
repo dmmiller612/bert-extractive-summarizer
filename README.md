@@ -4,7 +4,7 @@ This repo is the generalization of the lecture-summarizer repo. This tool utiliz
 to run extractive summarizations. This works by first embedding the sentences, then running a clustering algorithm, finding 
 the sentences that are closest to the cluster's centroids. This library also uses coreference techniques, utilizing the 
 https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
-the neuralcoref library can be tweaked in the SingleModel class.
+the neuralcoref library can be tweaked in the CoreferenceHandler class.
 
 Paper: https://arxiv.org/abs/1906.04165
 

@@ -4,7 +4,7 @@ This repo is the generalization of the lecture-summarizer repo. This tool utiliz
 to run extractive summarizations. This works by first embedding the sentences, then running a clustering algorithm, finding 
 the sentences that are closest to the cluster's centroids. This library also uses coreference techniques, utilizing the 
 https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
-the neuralcoref library can be tweaked in the SingleModel class.
+the neuralcoref library can be tweaked in the CoreferenceHandler class.
 
 Paper: https://arxiv.org/abs/1906.04165
 
@@ -18,10 +18,19 @@ Paper: https://arxiv.org/abs/1906.04165
 pip install bert-extractive-summarizer
 ```
 
-#### NOTE: If you are using coreference, you will need spacy 2.1.3 installed. There is currently an issue with Spacy 2.1.4 that produces segmentation faults. 
+#### We use spaCy 2.1.3 by default to support neuralcoref 4.0 (there is currently an issue with Spacy 2.1.4 that produces segmentation faults). If you want to use the latest spaCy, you'll either have to build neuralcoref 4.0 from source ([details](https://github.com/huggingface/neuralcoref/issues/197)) or don't use coreference resolution at all.
 ```bash
-pip install spacy
-pip install transformers==2.2.0
+pip install spacy==2.1.3
+pip install transformers==2.2.2
+pip install neuralcoref
+```
+
+#### Coreference functionality with neuralcoref requires a spaCy model, which has to be downloaded separately. 
+The default model is small English spaCy model (en_core_web_sm, 11Mb) and is installed automaticaly with this package. To use other model you'll have to install it manually.
+
+Example: installing medium (91 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models)). 
+```bash
+python -m spacy download en_core_web_md
 ```
 
 ## How to Use
@@ -33,6 +42,42 @@ from summarizer import Summarizer
 body = 'Text body that you want to summarize with BERT'
 body2 = 'Something else you want to summarize with BERT'
 model = Summarizer()
+model(body)
+model(body2)
+```
+
+#### Simple Example with coreference
+```python
+from summarizer import Summarizer
+from summarizer.coreference_handler import CoreferenceHandler
+
+handler = CoreferenceHandler(greedyness=.4)
+# How coreference works:
+# >>>handler.process('''My sister has a dog. She loves him.''', min_length=2)
+# ['My sister has a dog.', 'My sister loves a dog.']
+
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = Summarizer(sentence_handler=handler)
+model(body)
+model(body2)
+```
+
+#### Simple Example with custom model (we alwsys have to set output_hidden_states=True in model config)
+```python
+from transformers import *
+
+# Load model, model config and tokenizer via Transformers
+custom_config = AutoConfig.from_pretrained('allenai/scibert_scivocab_uncased')
+custom_config.output_hidden_states=True
+custom_tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+custom_model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased', config=custom_config)
+
+from summarizer import Summarizer
+
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = Summarizer(custom_model=custom_model, custom_tokenizer=custom_tokenizer)
 model(body)
 model(body2)
 ```
@@ -89,6 +134,7 @@ model = Summarizer(
     custom_tokenizer: Custom tokenizer can be supplied here,
     reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
     greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.
+    sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass CoreferenceHandler instance
 )
 
 model(

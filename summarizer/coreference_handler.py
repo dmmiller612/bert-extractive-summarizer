@@ -1,12 +1,16 @@
-from spacy.lang.en import English
+# remoced previous import and related functionality since it's just a blank language model,
+#  while neuralcoref requires passing pretrained language model via spacy.load()
+
 import neuralcoref
 from summarizer.sentence_handler import SentenceHandler
+
+import spacy
 
 
 class CoreferenceHandler(SentenceHandler):
 
-    def __init__(self, language = English, greedyness: float = 0.45):
-        super().__init__(language)
+    def __init__(self, spacy_model: str = 'en_core_web_sm', greedyness: float = 0.45):
+        self.nlp = spacy.load(spacy_model)
         neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
 
     def process(self, body: str, min_length: int = 40, max_length: int = 600):

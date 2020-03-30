@@ -11,3 +11,4 @@ bert-extractive-summarizer==0.2.2
 Flask
 flask-cors
 nltk
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz

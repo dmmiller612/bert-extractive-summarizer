@@ -27,7 +27,7 @@ class ModelProcessor(object):
         :param custom_tokenizer: If you have a custom tokenizer, you can add the tokenizer here.
         :param hidden: This signifies which layer of the BERT model you would like to use as embeddings.
         :param reduce_option: Given the output of the bert model, this param determines how you want to reduce results.
-        :param sentence_handler: The handler to process sentences.
+        :param sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass CoreferenceHandler instance
         :param random_state: The random state to reproduce summarizations.
         """
 

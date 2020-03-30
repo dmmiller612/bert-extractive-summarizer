@@ -21,15 +21,16 @@ pip install bert-extractive-summarizer
 #### We use spaCy 2.1.3 by default to support neuralcoref 4.0 (there is currently an issue with Spacy 2.1.4 that produces segmentation faults). If you want to use the latest spaCy, you'll either have to build neuralcoref 4.0 from source ([details](https://github.com/huggingface/neuralcoref/issues/197)) or don't use coreference resolution at all.
 ```bash
 pip install spacy==2.1.3
-pip install transformers==2.2.0
+pip install transformers==2.2.2
 pip install neuralcoref
 ```
 
 #### Coreference functionality with neuralcoref requires a spaCy model, which has to be downloaded separately. 
+The default model is small English spaCy model (en_core_web_sm, 11Mb) and is installed automaticaly with this package. To use other model you'll have to install it manually.
 
-Example: installing small (11 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models))
+Example: installing medium (91 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models)). 
 ```bash
-python -m spacy download en_core_web_sm
+python -m spacy download en_core_web_md
 ```
 
 ## How to Use

@@ -20,6 +20,7 @@ def albert_transformer():
 def summarizer():
     return Summarizer('distilbert-base-uncased')
 
+
 @pytest.fixture()
 def coreference_handler():
     return CoreferenceHandler()

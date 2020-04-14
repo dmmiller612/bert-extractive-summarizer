@@ -220,11 +220,3 @@ Response:
     "summary": "The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price. The buyer is RFR Holding, a New York real estate company. The incentive to sell the building at such a huge loss was due to the soaring rent the owners pay to Cooper Union, a New York college, for the land under the building."
 }
 ```
-
-### Deploy through Cortex
-
-The summarization library can also be deployed through Cortex. An example can be seen in the link below.
-
-https://github.com/cortexlabs/cortex/tree/master/examples/pytorch/text-summarizer
-
-

@@ -38,10 +38,12 @@ class BertParent(object):
 
         base_model, base_tokenizer = self.MODELS.get(model, (None, None))
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         if custom_model:
-            self.model = custom_model
+            self.model = custom_model.to(self.device)
         else:
-            self.model = base_model.from_pretrained(model, output_hidden_states=True)
+            self.model = base_model.from_pretrained(model, output_hidden_states=True).to(self.device)
 
         if custom_tokenizer:
             self.tokenizer = custom_tokenizer
@@ -59,15 +61,14 @@ class BertParent(object):
         """
         tokenized_text = self.tokenizer.tokenize(text)
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
-        return torch.tensor([indexed_tokens])
+        return torch.tensor([indexed_tokens]).to(self.device)
 
     def extract_embeddings(
         self,
         text: str,
         hidden: int=-2,
-        squeeze: bool=False,
         reduce_option: str ='mean'
-    ) -> ndarray:
+    ) -> torch.Tensor:
 
         """
         Extracts the embeddings for the given text
@@ -93,9 +94,6 @@ class BertParent(object):
             else:
                 pooled = hidden_states[hidden].mean(dim=1)
 
-        if squeeze:
-            return pooled.detach().numpy().squeeze()
-
         return pooled
 
     def create_matrix(
@@ -114,7 +112,7 @@ class BertParent(object):
         """
 
         return np.asarray([
-            np.squeeze(self.extract_embeddings(t, hidden=hidden, reduce_option=reduce_option).data.numpy())
+            np.squeeze(self.extract_embeddings(t, hidden=hidden, reduce_option=reduce_option).data.cpu().numpy())
             for t in content
         ])
 

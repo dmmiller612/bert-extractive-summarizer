@@ -20,6 +20,7 @@ def albert_transformer():
 def summarizer():
     return Summarizer('distilbert-base-uncased')
 
+
 @pytest.fixture()
 def coreference_handler():
     return CoreferenceHandler()
@@ -80,6 +81,7 @@ def test_albert(custom_summarizer, passage):
 def test_transformer_clz(albert_transformer, passage):
     res = albert_transformer(passage)
     assert len(res) > 10
+
 
 def test_coreference_handler(coreference_handler):
     orig = '''My sister has a dog. She loves him.'''

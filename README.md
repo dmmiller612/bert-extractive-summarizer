@@ -37,7 +37,7 @@ python -m spacy download en_core_web_md
 
 ## How to Use
 
-As a version 0.4.2, by default, CUDA is used if a gpu is available.
+As of version 0.4.2, by default, CUDA is used if a gpu is available.
 
 #### Simple Example
 ```python

@@ -1,4 +1,4 @@
-# remoced previous import and related functionality since it's just a blank language model,
+# removed previous import and related functionality since it's just a blank language model,
 #  while neuralcoref requires passing pretrained language model via spacy.load()
 
 import neuralcoref

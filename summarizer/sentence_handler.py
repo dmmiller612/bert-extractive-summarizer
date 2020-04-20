@@ -1,13 +1,14 @@
 from spacy.lang.en import English
+from typing import List
 
 
 class SentenceHandler(object):
 
-    def __init__(self, language = English):
+    def __init__(self, language=English):
         self.nlp = language()
         self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
 
-    def process(self, body: str, min_length: int = 40, max_length: int = 600):
+    def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         """
         Processes the content sentences.
 
@@ -19,5 +20,5 @@ class SentenceHandler(object):
         doc = self.nlp(body)
         return [c.string.strip() for c in doc.sents if max_length > len(c.string.strip()) > min_length]
 
-    def __call__(self, body: str, min_length: int = 40, max_length: int = 600):
+    def __call__(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         return self.process(body, min_length, max_length)

@@ -200,6 +200,7 @@ class TransformerSummarizer(SingleModel):
         sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345
     ):
+
         try:
             self.MODEL_DICT['Roberta'] = (RobertaModel, RobertaTokenizer)
             self.MODEL_DICT['Albert'] = (AlbertModel, AlbertTokenizer)
@@ -209,9 +210,11 @@ class TransformerSummarizer(SingleModel):
 
         model_clz, tokenizer_clz = self.MODEL_DICT[transformer_type]
         model = model_clz.from_pretrained(transformer_model_key, output_hidden_states=True)
+
         tokenizer = tokenizer_clz.from_pretrained(
             transformer_tokenizer_key if transformer_tokenizer_key is not None else transformer_model_key
         )
+
         super().__init__(
             None, model, tokenizer, hidden, reduce_option, sentence_handler, random_state
         )

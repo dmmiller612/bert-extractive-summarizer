@@ -5,8 +5,6 @@ import numpy as np
 from numpy import ndarray
 from typing import List
 
-logging.basicConfig(level=logging.WARNING)
-
 
 class BertParent(object):
 
@@ -123,3 +121,6 @@ class BertParent(object):
         reduce_option: str = 'mean'
     ) -> ndarray:
         return self.create_matrix(content, hidden, reduce_option)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)

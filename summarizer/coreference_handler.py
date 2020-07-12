@@ -2,9 +2,9 @@
 #  while neuralcoref requires passing pretrained language model via spacy.load()
 
 import neuralcoref
-from summarizer.sentence_handler import SentenceHandler
-
 import spacy
+
+from summarizer.sentence_handler import SentenceHandler
 
 
 class CoreferenceHandler(SentenceHandler):

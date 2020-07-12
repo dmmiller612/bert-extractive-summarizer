@@ -1,10 +1,12 @@
+from abc import abstractmethod
+from typing import List, Optional, Tuple
+
+import numpy as np
+from transformers import *
+
 from summarizer.bert_parent import BertParent
 from summarizer.cluster_features import ClusterFeatures
 from summarizer.sentence_handler import SentenceHandler
-from typing import List
-from abc import abstractmethod
-import numpy as np
-from transformers import *
 
 
 class ModelProcessor(object):
@@ -51,18 +53,64 @@ class ModelProcessor(object):
         doc = self.nlp(doc)
         return [c.string.strip() for c in doc.sents if max_length > len(c.string.strip()) > min_length]
 
-    @abstractmethod
-    def run_clusters(
-        self,
-        content: List[str],
-        ratio:float = 0.2,
-        algorithm: str = 'kmeans',
-        use_first: bool = True
-    ) -> List[str]:
+    def cluster_runner(
+            self,
+            content: List[str],
+            ratio: float = 0.2,
+            algorithm: str = 'kmeans',
+            use_first: bool = True
+    ) -> Tuple[List[str], np.ndarray]:
         """
-        Classes must implement this to run the clusters.
+        Runs the cluster algorithm based on the hidden state. Returns both the embeddings and sentences.
+
+        :param content: Content list of sentences.
+        :param ratio: The ratio to use for clustering.
+        :param algorithm: Type of algorithm to use for clustering.
+        :param use_first: Whether to use first sentence (helpful for news stories, etc).
+        :return: A tuple of summarized sentences and embeddings
         """
-        raise NotImplementedError("Must Implement run_clusters")
+
+        hidden = self.model(content, self.hidden, self.reduce_option)
+        hidden_args = ClusterFeatures(hidden, algorithm, random_state=self.random_state).cluster(ratio)
+
+        if use_first:
+            if hidden_args[0] != 0:
+                hidden_args.insert(0,0)
+
+        sentences = [content[j] for j in hidden_args]
+        embeddings = np.asarray([hidden[j] for j in hidden_args])
+
+        return sentences, embeddings
+
+    def __run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
+        """
+        Runs clusters and returns sentences.
+
+        :param content: The content of sentences.
+        :param ratio: Ratio to use for for clustering.
+        :param algorithm: Algorithm selection for clustering.
+        :param use_first: Whether to use first sentence
+        :return: summarized sentences
+        """
+
+        sentences, _ = self.cluster_runner(content, ratio, algorithm, use_first)
+        return sentences
+
+    def __retrieve_summarized_embeddings(
+            self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True
+    ) -> np.ndarray:
+        """
+        Retrieves embeddings of the summarized sentences.
+
+        :param content: The content of sentences.
+        :param ratio: Ratio to use for for clustering.
+        :param algorithm: Algorithm selection for clustering.
+        :param use_first: Whether to use first sentence
+        :return: Summarized embeddings
+        """
+
+        _, embeddings = self.cluster_runner(content, ratio, algorithm, use_first)
+        return embeddings
 
     def run(
         self,
@@ -84,12 +132,42 @@ class ModelProcessor(object):
         :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
         :return: A summary sentence
         """
+
         sentences = self.sentence_handler(body, min_length, max_length)
 
         if sentences:
-            sentences = self.run_clusters(sentences, ratio, algorithm, use_first)
+            sentences = self.__run_clusters(sentences, ratio, algorithm, use_first)
 
         return ' '.join(sentences)
+
+    def run_embeddings(
+        self,
+        body: str,
+        ratio: float = 0.2,
+        min_length: int = 40,
+        max_length: int = 600,
+        use_first: bool = True,
+        algorithm: str ='kmeans'
+    ) -> Optional[np.ndarray]:
+        """
+        Preprocesses the sentences, runs the clusters to find the centroids, then combines the embeddings.
+
+        :param body: The raw string body to process
+        :param ratio: Ratio of sentences to use
+        :param min_length: Minimum length of sentence candidates to utilize for the summary.
+        :param max_length: Maximum length of sentence candidates to utilize for the summary
+        :param use_first: Whether or not to use the first sentence
+        :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
+        :return: A summary embedding
+        """
+
+        sentences = self.sentence_handler(body, min_length, max_length)
+
+        if sentences:
+            embeddings = self.__retrieve_summarized_embeddings(sentences, ratio, algorithm, use_first)
+            return embeddings
+
+        return None
 
     def __call__(
         self,
@@ -113,42 +191,12 @@ class ModelProcessor(object):
         :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
         :return: A summary sentence
         """
+
         return self.run(body, ratio, min_length, max_length, algorithm=algorithm, use_first=use_first)
 
 
-class SingleModel(ModelProcessor):
-    """
-    Deprecated for naming sake.
-    """
 
-    def __init__(
-        self,
-        model='bert-large-uncased',
-        custom_model: PreTrainedModel = None,
-        custom_tokenizer: PreTrainedTokenizer = None,
-        hidden: int=-2,
-        reduce_option: str = 'mean',
-        sentence_handler: SentenceHandler = SentenceHandler(),
-        random_state: int=12345
-    ):
-        super(SingleModel, self).__init__(
-            model=model, custom_model=custom_model, custom_tokenizer=custom_tokenizer,
-            hidden=hidden, reduce_option=reduce_option,
-            sentence_handler=sentence_handler, random_state=random_state
-        )
-
-    def run_clusters(self, content: List[str], ratio=0.2, algorithm='kmeans', use_first: bool= True) -> List[str]:
-        hidden = self.model(content, self.hidden, self.reduce_option)
-        hidden_args = ClusterFeatures(hidden, algorithm, random_state=self.random_state).cluster(ratio)
-
-        if use_first:
-            if hidden_args[0] != 0:
-                hidden_args.insert(0,0)
-
-        return [content[j] for j in hidden_args]
-
-
-class Summarizer(SingleModel):
+class Summarizer(ModelProcessor):
 
     def __init__(
         self,
@@ -172,12 +220,13 @@ class Summarizer(SingleModel):
         :param language: Which language to use for training.
         :param random_state: The random state to reproduce summarizations.
         """
+
         super(Summarizer, self).__init__(
             model, custom_model, custom_tokenizer, hidden, reduce_option, sentence_handler, random_state
         )
 
 
-class TransformerSummarizer(SingleModel):
+class TransformerSummarizer(ModelProcessor):
 
     MODEL_DICT = {
         'Bert': (BertModel, BertTokenizer),

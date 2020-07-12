@@ -1,7 +1,8 @@
 import pytest
-from summarizer import Summarizer, TransformerSummarizer
-from summarizer.coreference_handler import CoreferenceHandler
 from transformers import AlbertTokenizer, AlbertModel
+
+from summarizer import Summarizer
+from summarizer.coreference_handler import CoreferenceHandler
 
 
 @pytest.fixture()
@@ -9,11 +10,6 @@ def custom_summarizer():
     albert_model = AlbertModel.from_pretrained('albert-base-v1', output_hidden_states=True)
     albert_tokenizer = AlbertTokenizer.from_pretrained('albert-base-v1')
     return Summarizer(custom_model=albert_model, custom_tokenizer=albert_tokenizer)
-
-
-@pytest.fixture()
-def albert_transformer():
-    return TransformerSummarizer('Albert', 'albert-base-v1')
 
 
 @pytest.fixture()
@@ -58,6 +54,12 @@ def test_summary_creation(summarizer, passage):
     res = summarizer(passage, ratio=0.15, min_length=25, max_length=500)
     assert len(res) > 10
 
+
+def test_summary_embeddings(summarizer, passage):
+    embeddings = summarizer.run_embeddings(passage, ratio=0.15, min_length=25, max_length=500)
+    assert embeddings.shape == (4, 768)
+
+
 def test_summary_larger_ratio(summarizer, passage):
     res = summarizer(passage, ratio=0.5)
     assert len(res) > 10
@@ -75,11 +77,6 @@ def test_do_not_use_first(summarizer, passage):
 
 def test_albert(custom_summarizer, passage):
     res = custom_summarizer(passage)
-    assert len(res) > 10
-
-
-def test_transformer_clz(albert_transformer, passage):
-    res = albert_transformer(passage)
     assert len(res) > 10
 
 

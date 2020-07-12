@@ -7,8 +7,8 @@ from summarizer.coreference_handler import CoreferenceHandler
 
 @pytest.fixture()
 def custom_summarizer():
-    albert_model = AlbertModel.from_pretrained('albert-base-v1', output_hidden_states=True)
-    albert_tokenizer = AlbertTokenizer.from_pretrained('albert-base-v1')
+    albert_model = AlbertModel.from_pretrained('albert-base-v2', output_hidden_states=True)
+    albert_tokenizer = AlbertTokenizer.from_pretrained('albert-base-v2')
     return Summarizer(custom_model=albert_model, custom_tokenizer=albert_tokenizer)
 
 

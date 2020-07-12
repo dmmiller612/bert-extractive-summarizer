@@ -57,7 +57,8 @@ def test_summary_creation(summarizer, passage):
 
 def test_summary_embeddings(summarizer, passage):
     embeddings = summarizer.run_embeddings(passage, ratio=0.15, min_length=25, max_length=500)
-    assert embeddings.shape == (4, 768)
+    assert embeddings.shape[1] == 768
+    assert embeddings.shape[0] > 1
 
 
 def test_summary_larger_ratio(summarizer, passage):

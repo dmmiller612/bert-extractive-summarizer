@@ -1,5 +1,6 @@
-from spacy.lang.en import English
 from typing import List
+
+from spacy.lang.en import English
 
 
 class SentenceHandler(object):

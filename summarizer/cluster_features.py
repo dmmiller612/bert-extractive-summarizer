@@ -1,9 +1,10 @@
+from typing import List
+
 import numpy as np
 from numpy import ndarray
 from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import PCA
-from typing import List
+from sklearn.mixture import GaussianMixture
 
 
 class ClusterFeatures(object):

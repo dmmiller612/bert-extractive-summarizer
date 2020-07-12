@@ -1,9 +1,10 @@
-from transformers import *
 import logging
-import torch
-import numpy as np
-from numpy import ndarray
 from typing import List
+
+import numpy as np
+import torch
+from numpy import ndarray
+from transformers import *
 
 logging.basicConfig(level=logging.WARNING)
 

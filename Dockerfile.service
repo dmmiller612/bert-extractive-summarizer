@@ -22,5 +22,7 @@ WORKDIR /opt/service
 
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements-service.txt
+COPY init.py /opt/service
+RUN python3 ./init.py
 
 ENTRYPOINT ["python3", "./server.py"]

@@ -1,20 +1,11 @@
 import pytest
-from transformers import AlbertTokenizer, AlbertModel
 
-from summarizer import Summarizer
 from summarizer.sentence_handler import SentenceHandler
 
 
 @pytest.fixture()
-def custom_summarizer():
-    albert_model = AlbertModel.from_pretrained('albert-base-v2', output_hidden_states=True)
-    albert_tokenizer = AlbertTokenizer.from_pretrained('albert-base-v2')
-    return Summarizer(custom_model=albert_model, custom_tokenizer=albert_tokenizer)
-
-
-@pytest.fixture()
-def summarizer():
-    return Summarizer('distilbert-base-uncased')
+def sentence_handler():
+    return SentenceHandler()
 
 
 @pytest.fixture()
@@ -45,48 +36,7 @@ def passage():
     '''
 
 
-def test_summary_creation(summarizer, passage):
-    res = summarizer(passage, ratio=0.15, min_length=25, max_length=500)
-    assert len(res) > 10
+def test_sentence_splits_default(sentence_handler, passage):
+    res = sentence_handler(passage)
+    assert len(res) == 21
 
-
-def test_summary_embeddings(summarizer, passage):
-    embeddings = summarizer.run_embeddings(passage, ratio=0.15, min_length=25, max_length=500)
-    assert embeddings.shape[1] == 768
-    assert embeddings.shape[0] > 1
-
-
-def test_summary_larger_ratio(summarizer, passage):
-    res = summarizer(passage, ratio=0.5)
-    assert len(res) > 10
-
-
-def test_cluster_algorithm(summarizer, passage):
-    res = summarizer(passage, algorithm='gmm')
-    assert len(res) > 10
-
-
-def test_do_not_use_first(summarizer, passage):
-    res = summarizer(passage, ratio=0.1, use_first=False)
-    assert res is not None
-
-
-def test_albert(custom_summarizer, passage):
-    res = custom_summarizer(passage)
-    assert len(res) > 10
-
-
-def test_num_sentences(summarizer, passage):
-    result = summarizer(passage, num_sentences=3)
-    result_sents = SentenceHandler().process(result)
-    assert len(result_sents) == 3
-
-
-def test_num_sentences_embeddings(summarizer, passage):
-    result = summarizer.run_embeddings(passage, num_sentences=4)
-    assert result.shape == (4, 768)
-
-
-def test_aggregate_embeddings(summarizer, passage):
-    result = summarizer.run_embeddings(passage, num_sentences=4, aggregate='mean')
-    assert result.shape == (768,)

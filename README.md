@@ -50,6 +50,30 @@ model(body)
 model(body2)
 ```
 
+#### Specifying number of sentences
+
+Number of sentences can be supplied as a ratio or an integer. Examples are provided below.
+
+```python
+from summarizer import Summarizer
+body = 'Text body that you want to summarize with BERT'
+model = Summarizer()
+result = model(body, ratio=0.2)  # Specified with ratio
+result = model(body, num_sentences=3)  # Will return 3 sentences 
+```
+
+#### Retrieve Embeddings
+You can also retrieve the embeddings of the summarization. Examples are below:
+
+```python
+from summarizer import Summarizer
+body = 'Text body that you want to summarize with BERT'
+model = Summarizer()
+result = model.run_embeddings(body, ratio=0.2)  # Specified with ratio. 
+result = model.run_embeddings(body, num_sentences=3)  # Will return (3, N) embedding numpy matrix.
+result = model.run_embeddings(body, num_sentences=3, aggregate='mean')  # Will return Mean aggregate over embeddings. 
+```
+
 #### Simple Example with coreference
 ```python
 from summarizer import Summarizer
@@ -67,7 +91,7 @@ model(body)
 model(body2)
 ```
 
-#### Simple Example with custom model (we alwsys have to set output_hidden_states=True in model config)
+#### Simple Example with custom model (we always have to set output_hidden_states=True in model config)
 ```python
 from transformers import *
 
@@ -132,12 +156,11 @@ Still the building is among the best known in the city, even to people who have 
 
 ```
 model = Summarizer(
-    model: str #This gets used by the hugging face bert library to load the model, you can supply a custom trained model here
-    hidden: int # Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
-    custom_model: Custom model can be supplied here,
-    custom_tokenizer: Custom tokenizer can be supplied here,
-    reduce_option: str # It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
-    greedyness: float # number between 0 and 1. It is used for the coreference model. Anywhere from 0.35 to 0.45 seems to work well.
+    model: This gets used by the hugging face bert library to load the model, you can supply a custom trained model here
+    custom_model: If you have a pre-trained model, you can add the model class here.
+    custom_tokenizer:  If you have a custom tokenizer, you can add the tokenizer here.
+    hidden: Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
+    reduce_option: It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
     sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass CoreferenceHandler instance
 )
 
@@ -145,7 +168,8 @@ model(
     body: str # The string body that you want to summarize
     ratio: float # The ratio of sentences that you want for the final summary
     min_length: int # Parameter to specify to remove sentences that are less than 40 characters
-    max_length: int # Parameter to specify to remove sentences greater than the max length
+    max_length: int # Parameter to specify to remove sentences greater than the max length,
+    num_sentences: Number of sentences to use. Overrides ratio if supplied.
 )
 ```
 

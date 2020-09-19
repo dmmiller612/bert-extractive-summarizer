@@ -1,12 +1,9 @@
-import logging
 from typing import List
 
 import numpy as np
 import torch
 from numpy import ndarray
 from transformers import *
-
-logging.basicConfig(level=logging.WARNING)
 
 
 class BertParent(object):

@@ -25,8 +25,8 @@ class BertParent(object):
     def __init__(
         self,
         model: str,
-        custom_model: PreTrainedModel=None,
-        custom_tokenizer: PreTrainedTokenizer=None
+        custom_model: PreTrainedModel = None,
+        custom_tokenizer: PreTrainedTokenizer = None
     ):
         """
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used
@@ -64,7 +64,7 @@ class BertParent(object):
     def extract_embeddings(
         self,
         text: str,
-        hidden: int=-2,
+        hidden: int = -2,
         reduce_option: str ='mean'
     ) -> torch.Tensor:
 
@@ -97,7 +97,7 @@ class BertParent(object):
     def create_matrix(
         self,
         content: List[str],
-        hidden: int=-2,
+        hidden: int = -2,
         reduce_option: str = 'mean'
     ) -> ndarray:
         """
@@ -117,7 +117,7 @@ class BertParent(object):
     def __call__(
         self,
         content: List[str],
-        hidden: int= -2,
+        hidden: int = -2,
         reduce_option: str = 'mean'
     ) -> ndarray:
         return self.create_matrix(content, hidden, reduce_option)

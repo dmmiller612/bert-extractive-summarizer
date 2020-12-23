@@ -75,7 +75,7 @@ class BertParent(object):
         :param hidden: The hidden layer to use for a readout handler
         :param squeeze: If we should squeeze the outputs (required for some layers)
         :param reduce_option: How we should reduce the items.
-        :return: A numpy array.
+        :return: A torch vector.
         """
 
         tokens_tensor = self.tokenize_input(text)
@@ -84,13 +84,22 @@ class BertParent(object):
         if -1 > hidden > -12:
 
             if reduce_option == 'max':
-                pooled = hidden_states[hidden].max(dim=1)[0]
+                pooled = hidden_states[hidden].max(dim=1)[0].squeeze()
 
             elif reduce_option == 'median':
-                pooled = hidden_states[hidden].median(dim=1)[0]
+                pooled = hidden_states[hidden].median(dim=1)[0].squeeze()
+
+            elif reduce_option == 'concat_last_4':
+                last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
+                cat_hidden_states = torch.cat(tuple(last_4), dim=-1)
+                pooled = torch.mean(cat_hidden_states, dim=1).squeeze()
+
+            elif reduce_option == 'reduce_last_4':
+                last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
+                pooled = torch.cat(tuple(last_4), dim=1).mean(axis=1).squeeze()
 
             else:
-                pooled = hidden_states[hidden].mean(dim=1)
+                pooled = hidden_states[hidden].mean(dim=1).squeeze()
 
         return pooled
 

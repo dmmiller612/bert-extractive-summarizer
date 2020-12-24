@@ -274,7 +274,7 @@ class TransformerSummarizer(ModelProcessor):
         'TransfoXL': (TransfoXLModel, TransfoXLTokenizer),
         'XLNet': (XLNetModel, XLNetTokenizer),
         'XLM': (XLMModel, XLMTokenizer),
-        'DistilBert': (DistilBertModel, DistilBertTokenizer),
+        'DistilBert': (DistilBertModel, DistilBertTokenizer)
     }
 
     def __init__(

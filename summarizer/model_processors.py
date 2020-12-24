@@ -51,7 +51,7 @@ class ModelProcessor(object):
         Processes the content sentences with neural coreference.
         :param body: The raw string body to process
         :param min_length: Minimum length that the sentences must be
-        :param max_length: Max length that the sentences mus fall under
+        :param max_length: Max length that the sentences must fall under
         :return: Returns a list of sentences with coreference applied.
         """
 
@@ -274,7 +274,7 @@ class TransformerSummarizer(ModelProcessor):
         'TransfoXL': (TransfoXLModel, TransfoXLTokenizer),
         'XLNet': (XLNetModel, XLNetTokenizer),
         'XLM': (XLMModel, XLMTokenizer),
-        'DistilBert': (DistilBertModel, DistilBertTokenizer),
+        'DistilBert': (DistilBertModel, DistilBertTokenizer)
     }
 
     def __init__(

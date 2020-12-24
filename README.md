@@ -166,10 +166,11 @@ model = Summarizer(
 
 model(
     body: str # The string body that you want to summarize
-    ratio: float # The ratio of sentences that you want for the final summary
-    min_length: int # Parameter to specify to remove sentences that are less than 40 characters
-    max_length: int # Parameter to specify to remove sentences greater than the max length,
-    num_sentences: Number of sentences to use. Overrides ratio if supplied.
+    ratio: float # The ratio of sentences that you want for the final summary, default 0.2
+    min_length: int # Parameter to specify to remove sentences that are less than min length, default 40
+    max_length: int # Parameter to specify to remove sentences greater than the max length, default 600
+    algorithm: str # Which clustering algorithm to use, kmeans (default) or gmm
+    num_sentences: int # Number of sentences to use. Overrides ratio if supplied. default None
 )
 ```
 

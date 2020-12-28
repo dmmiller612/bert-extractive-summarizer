@@ -41,7 +41,6 @@ class ClusterFeatures(object):
 
         :param k: amount of clusters
         :return: Clustering model
-
         """
 
         if self.algorithm == 'gmm':
@@ -112,4 +111,11 @@ class ClusterFeatures(object):
         return sorted_values
 
     def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
+        """
+        Clusters sentences based on the ratio
+        :param ratio: Ratio to use for clustering
+        :param num_sentences: Number of sentences. Overrides ratio.
+        :return: Sentences index that qualify for summary
+        """
+
         return self.cluster(ratio)

@@ -18,6 +18,11 @@ def summarizer():
 
 
 @pytest.fixture()
+def summarizer_multi_hidden():
+    return Summarizer('distilbert-base-uncased', hidden=[-1,-2,-3])
+
+
+@pytest.fixture()
 def passage():
     return '''
     The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price.
@@ -45,8 +50,19 @@ def passage():
     '''
 
 
+def test_multi_hidden(summarizer_multi_hidden, passage):
+    res = summarizer_multi_hidden(passage, num_sentences=5, min_length=40, max_length=500)
+    assert len(res) > 10
+
+
+def test_multi_hidden_concat(summarizer_multi_hidden: Summarizer, passage):
+    summarizer_multi_hidden.hidden_concat = True
+    res = summarizer_multi_hidden(passage, num_sentences=5, min_length=40, max_length=500)
+    assert len(res) > 10
+
+
 def test_summary_creation(summarizer, passage):
-    res = summarizer(passage, ratio=0.15, min_length=25, max_length=500)
+    res = summarizer(passage, ratio=0.15, min_length=40, max_length=500)
     assert len(res) > 10
 
 

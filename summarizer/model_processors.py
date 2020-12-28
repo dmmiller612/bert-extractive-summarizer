@@ -292,6 +292,8 @@ class TransformerSummarizer(ModelProcessor):
             self.MODEL_DICT['Roberta'] = (RobertaModel, RobertaTokenizer)
             self.MODEL_DICT['Albert'] = (AlbertModel, AlbertTokenizer)
             self.MODEL_DICT['Camembert'] = (CamembertModel, CamembertTokenizer)
+            self.MODEL_DICT['Bart'] = (BartModel, BartTokenizer)
+            self.MODEL_DICT['Longformer'] = (LongformerModel, LongformerTokenizer)
         except Exception as e:
             pass  # older transformer version
 

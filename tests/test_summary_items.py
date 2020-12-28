@@ -46,7 +46,7 @@ def passage():
 
 
 def test_summary_creation(summarizer, passage):
-    res = summarizer(passage, ratio=0.15, min_length=25, max_length=500)
+    res = summarizer(passage, ratio=0.15, min_length=40, max_length=500)
     assert len(res) > 10
 
 

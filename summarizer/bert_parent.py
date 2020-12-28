@@ -98,6 +98,15 @@ class BertParent(object):
                 last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
                 pooled = torch.cat(tuple(last_4), dim=1).mean(axis=1).squeeze()
 
+            elif reduce_option == 'reduce_last_2':
+                last_2 = [hidden_states[i] for i in (-1, -2)]
+                pooled = torch.cat(tuple(last_2), dim=1).mean(axis=1).squeeze()
+
+            elif reduce_option == 'concat_last_2':
+                last_2 = [hidden_states[i] for i in (-1, -2)]
+                cat_hidden_states = torch.cat(tuple(last_2), dim=-1)
+                pooled = torch.mean(cat_hidden_states, dim=1).squeeze()
+
             else:
                 pooled = hidden_states[hidden].mean(dim=1).squeeze()
 

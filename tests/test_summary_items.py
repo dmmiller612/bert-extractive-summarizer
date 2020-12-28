@@ -18,6 +18,11 @@ def summarizer():
 
 
 @pytest.fixture()
+def summarizer_multi_hidden():
+    return Summarizer('distilbert-base-uncased', hidden=[-1,-2,-3])
+
+
+@pytest.fixture()
 def passage():
     return '''
     The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price.
@@ -43,6 +48,17 @@ def passage():
     Walter Chrysler had set out to build the tallest building in the world, a competition at that time with another Manhattan skyscraper under construction at 40 Wall Street at the south end of Manhattan. He kept secret the plans for the spire that would grace the top of the building, building it inside the structure and out of view of the public until 40 Wall Street was complete.
     Once the competitor could rise no higher, the spire of the Chrysler building was raised into view, giving it the title.
     '''
+
+
+def test_multi_hidden(summarizer_multi_hidden, passage):
+    res = summarizer_multi_hidden(passage, num_sentences=5, min_length=40, max_length=500)
+    assert len(res) > 10
+
+
+def test_multi_hidden_concat(summarizer_multi_hidden: Summarizer, passage):
+    summarizer_multi_hidden.hidden_concat = True
+    res = summarizer_multi_hidden(passage, num_sentences=5, min_length=40, max_length=500)
+    assert len(res) > 10
 
 
 def test_summary_creation(summarizer, passage):

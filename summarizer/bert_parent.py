@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 import numpy as np
 import torch
@@ -61,62 +61,75 @@ class BertParent(object):
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
         return torch.tensor([indexed_tokens]).to(self.device)
 
+    def _pooled_handler(self, hidden: torch.Tensor, reduce_option: str) -> torch.Tensor:
+        """
+        Handles torch tensor.
+
+        :param hidden: The hidden torch tensor to process.
+        :param reduce_option: The reduce option to use, such as mean, etc.
+        :return: Returns a torch tensor.
+        """
+
+        if reduce_option == 'max':
+            return hidden.max(dim=1)[0].squeeze()
+
+        elif reduce_option == 'median':
+            return hidden.median(dim=1)[0].squeeze()
+
+        return hidden.mean(dim=1).squeeze()
+
     def extract_embeddings(
         self,
         text: str,
-        hidden: int=-2,
-        reduce_option: str ='mean'
+        hidden: Union[List[int], int] = -2,
+        reduce_option: str ='mean',
+        hidden_concat: bool = False
     ) -> torch.Tensor:
 
         """
         Extracts the embeddings for the given text
 
         :param text: The text to extract embeddings for.
-        :param hidden: The hidden layer to use for a readout handler
+        :param hidden: The hidden layer(s) to use for a readout handler
         :param squeeze: If we should squeeze the outputs (required for some layers)
         :param reduce_option: How we should reduce the items.
+        :param hidden_concat: Whether or not to concat multiple hidden layers.
         :return: A torch vector.
         """
 
         tokens_tensor = self.tokenize_input(text)
         pooled, hidden_states = self.model(tokens_tensor)[-2:]
 
-        if -1 > hidden > -12:
+        # deprecated temporary keyword functions.
+        if reduce_option == 'concat_last_4':
+            last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
+            cat_hidden_states = torch.cat(tuple(last_4), dim=-1)
+            return torch.mean(cat_hidden_states, dim=1).squeeze()
 
-            if reduce_option == 'max':
-                pooled = hidden_states[hidden].max(dim=1)[0].squeeze()
+        elif reduce_option == 'reduce_last_4':
+            last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
+            return torch.cat(tuple(last_4), dim=1).mean(axis=1).squeeze()
 
-            elif reduce_option == 'median':
-                pooled = hidden_states[hidden].median(dim=1)[0].squeeze()
+        elif type(hidden) == int:
+            hidden_s = hidden_states[hidden]
+            return self._pooled_handler(hidden_s, reduce_option)
 
-            elif reduce_option == 'concat_last_4':
-                last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
-                cat_hidden_states = torch.cat(tuple(last_4), dim=-1)
-                pooled = torch.mean(cat_hidden_states, dim=1).squeeze()
+        elif hidden_concat:
+            last_states = [hidden_states[i] for i in hidden]
+            cat_hidden_states = torch.cat(tuple(last_states), dim=-1)
+            return torch.mean(cat_hidden_states, dim=1).squeeze()
 
-            elif reduce_option == 'reduce_last_4':
-                last_4 = [hidden_states[i] for i in (-1, -2, -3, -4)]
-                pooled = torch.cat(tuple(last_4), dim=1).mean(axis=1).squeeze()
+        last_states = [hidden_states[i] for i in hidden]
+        hidden_s = torch.cat(tuple(last_states), dim=1)
 
-            elif reduce_option == 'reduce_last_2':
-                last_2 = [hidden_states[i] for i in (-1, -2)]
-                pooled = torch.cat(tuple(last_2), dim=1).mean(axis=1).squeeze()
-
-            elif reduce_option == 'concat_last_2':
-                last_2 = [hidden_states[i] for i in (-1, -2)]
-                cat_hidden_states = torch.cat(tuple(last_2), dim=-1)
-                pooled = torch.mean(cat_hidden_states, dim=1).squeeze()
-
-            else:
-                pooled = hidden_states[hidden].mean(dim=1).squeeze()
-
-        return pooled
+        return self._pooled_handler(hidden_s, reduce_option)
 
     def create_matrix(
         self,
         content: List[str],
-        hidden: int=-2,
-        reduce_option: str = 'mean'
+        hidden: Union[List[int], int] = -2,
+        reduce_option: str = 'mean',
+        hidden_concat: bool = False
     ) -> ndarray:
         """
         Create matrix from the embeddings
@@ -124,18 +137,21 @@ class BertParent(object):
         :param content: The list of sentences
         :param hidden: Which hidden layer to use
         :param reduce_option: The reduce option to run.
+        :param hidden_concat: Whether or not to concat multiple hidden layers.
         :return: A numpy array matrix of the given content.
         """
 
         return np.asarray([
-            np.squeeze(self.extract_embeddings(t, hidden=hidden, reduce_option=reduce_option).data.cpu().numpy())
-            for t in content
+            np.squeeze(self.extract_embeddings(
+                t, hidden=hidden, reduce_option=reduce_option, hidden_concat=hidden_concat
+            ).data.cpu().numpy()) for t in content
         ])
 
     def __call__(
         self,
         content: List[str],
         hidden: int= -2,
-        reduce_option: str = 'mean'
+        reduce_option: str = 'mean',
+        hidden_concat: bool = False
     ) -> ndarray:
-        return self.create_matrix(content, hidden, reduce_option)
+        return self.create_matrix(content, hidden, reduce_option, hidden_concat)

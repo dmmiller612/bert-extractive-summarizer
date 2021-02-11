@@ -24,4 +24,4 @@ class CoreferenceHandler(SentenceHandler):
         """
         doc = self.nlp(body)._.coref_resolved
         doc = self.nlp(doc)
-        return [c.string.strip() for c in doc.sents if max_length > len(c.string.strip()) > min_length]
+        return [c.text.strip() for c in doc.sents if max_length > len(c.text.strip()) > min_length]

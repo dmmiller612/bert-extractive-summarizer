@@ -7,7 +7,7 @@ tqdm==4.32.2
 neuralcoref==4.0
 argparse
 scikit-learn
-bert-extractive-summarizer==0.4.2
+bert-extractive-summarizer
 Flask
 flask-cors
 nltk

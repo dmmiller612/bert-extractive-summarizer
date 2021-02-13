@@ -19,7 +19,7 @@ def summarizer():
 
 @pytest.fixture()
 def summarizer_multi_hidden():
-    return Summarizer('distilbert-base-uncased', hidden=[-1,-2,-3])
+    return Summarizer('distilbert-base-uncased', hidden=[-1,-2])
 
 
 @pytest.fixture()

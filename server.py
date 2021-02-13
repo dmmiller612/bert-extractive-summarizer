@@ -51,9 +51,12 @@ class Parser(object):
         sentences: List[str] = self.run()
         return ' '.join([sentence.strip() for sentence in sentences]).strip()
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    return 'Hello, World!'
 
-@app.route('/summarize', methods=['POST'])
-def convert_raw_text():
+@app.route('/summarize_by_ratio', methods=['POST'])
+def convert_raw_text_by_ratio():
     ratio = float(request.args.get('ratio', 0.2))
     min_length = int(request.args.get('min_length', 25))
     max_length = int(request.args.get('max_length', 500))
@@ -64,6 +67,23 @@ def convert_raw_text():
 
     parsed = Parser(data).convert_to_paragraphs()
     summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length)
+
+    return jsonify({
+        'summary': summary
+    })
+
+@app.route('/summarize_by_sentence', methods=['POST'])
+def convert_raw_text_by_sent():
+    num_sentences = int(request.args.get('num_sentences', 5))
+    min_length = int(request.args.get('min_length', 25))
+    max_length = int(request.args.get('max_length', 500))
+
+    data = request.data
+    if not data:
+        abort(make_response(jsonify(message="Request must have raw text"), 400))
+
+    parsed = Parser(data).convert_to_paragraphs()
+    summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
 
     return jsonify({
         'summary': summary
@@ -81,7 +101,7 @@ if __name__ == '__main__':
     parser.add_argument('-greediness', dest='greediness', help='', default=0.45)
     parser.add_argument('-reduce', dest='reduce', help='', default='mean')
     parser.add_argument('-hidden', dest='hidden', help='', default=-2)
-    parser.add_argument('-port', dest='port', help='', default=5000)
+    parser.add_argument('-port', dest='port', help='', default=8080)
     parser.add_argument('-host', dest='host', help='', default='0.0.0.0')
 
     args = parser.parse_args()

@@ -28,7 +28,6 @@ class SentenceHandler(object):
 
         return to_return
 
-
     def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         """
         Processes the content sentences.
@@ -39,7 +38,6 @@ class SentenceHandler(object):
         :return: Returns a list of sentences.
         """
         doc = self.nlp(body)
-
         return self.sentence_processor(doc, min_length, max_length)
 
     def __call__(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:

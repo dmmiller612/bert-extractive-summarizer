@@ -57,7 +57,7 @@ def test_elbow_calculation(summarizer, passage):
 
 def test_optimal_elbow_calculation(summarizer, passage):
     res = summarizer.calculate_optimal_k(passage, k_max=6)
-    assert res == 3
+    assert type(res) == int
 
 
 def test_list_handling(summarizer, passage):

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 import numpy as np
 from numpy import ndarray
@@ -20,12 +20,11 @@ class ClusterFeatures(object):
         random_state: int = 12345
     ):
         """
-        :param features: the embedding matrix created by bert parent
-        :param algorithm: Which clustering algorithm to use
-        :param pca_k: If you want the features to be ran through pca, this is the components number
-        :param random_state: Random state
+        :param features: the embedding matrix created by bert parent.
+        :param algorithm: Which clustering algorithm to use.
+        :param pca_k: If you want the features to be ran through pca, this is the components number.
+        :param random_state: Random state.
         """
-
         if pca_k:
             self.features = PCA(n_components=pca_k).fit_transform(features)
         else:
@@ -37,10 +36,10 @@ class ClusterFeatures(object):
 
     def __get_model(self, k: int):
         """
-        Retrieve clustering model
+        Retrieve clustering model.
 
-        :param k: amount of clusters
-        :return: Clustering model
+        :param k: amount of clusters.
+        :return: Clustering model.
         """
 
         if self.algorithm == 'gmm':
@@ -49,22 +48,22 @@ class ClusterFeatures(object):
 
     def __get_centroids(self, model):
         """
-        Retrieve centroids of model
-        :param model: Clustering model
-        :return: Centroids
-        """
+        Retrieve centroids of model.
 
+        :param model: Clustering model.
+        :return: Centroids.
+        """
         if self.algorithm == 'gmm':
             return model.means_
         return model.cluster_centers_
 
     def __find_closest_args(self, centroids: np.ndarray) -> Dict:
         """
-        Find the closest arguments to centroid
-        :param centroids: Centroids to find closest
-        :return: Closest arguments
-        """
+        Find the closest arguments to centroid.
 
+        :param centroids: Centroids to find closest.
+        :return: Closest arguments.
+        """
         centroid_min = 1e10
         cur_arg = -1
         args = {}
@@ -86,12 +85,57 @@ class ClusterFeatures(object):
 
         return args
 
+    def calculate_elbow(self, k_max: int) -> List[float]:
+        """
+        Calculates elbow up to the provided k_max.
+
+        :param k_max: K_max to calculate elbow for.
+        :return: The inertias up to k_max.
+        """
+        inertias = []
+
+        for k in range(1, min(k_max, len(self.features))):
+            model = self.__get_model(k).fit(self.features)
+
+            inertias.append(model.inertia_)
+
+        return inertias
+
+    def calculate_optimal_cluster(self, k_max: int):
+        """
+        Calculates the optimal cluster based on Elbow.
+
+        :param k_max: The max k to search elbow for.
+        :return: The optimal cluster size.
+        """
+        delta_1 = []
+        delta_2 = []
+
+        max_strength = 0
+        k = 1
+
+        inertias = self.calculate_elbow(k_max)
+
+        for i in range(len(inertias)):
+            delta_1.append(inertias[i] - inertias[i-1] if i > 0 else 0.0)
+            delta_2.append(delta_1[i] - delta_1[i-1] if i > 1 else 0.0)
+
+        for j in range(len(inertias)):
+            strength = 0 if j <= 1 or j == len(inertias) -1 else delta_2[j+1] - delta_1[j+1]
+
+            if strength > max_strength:
+                max_strength = strength
+                k = j + 1
+
+        return k
+
     def cluster(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
         """
-        Clusters sentences based on the ratio
-        :param ratio: Ratio to use for clustering
+        Clusters sentences based on the ratio.
+
+        :param ratio: Ratio to use for clustering.
         :param num_sentences: Number of sentences. Overrides ratio.
-        :return: Sentences index that qualify for summary
+        :return: Sentences index that qualify for summary.
         """
 
         if num_sentences is not None:
@@ -112,10 +156,10 @@ class ClusterFeatures(object):
 
     def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
         """
-        Clusters sentences based on the ratio
-        :param ratio: Ratio to use for clustering
-        :param num_sentences: Number of sentences. Overrides ratio.
-        :return: Sentences index that qualify for summary
-        """
+        Clusters sentences based on the ratio.
 
+        :param ratio: Ratio to use for clustering.
+        :param num_sentences: Number of sentences. Overrides ratio.
+        :return: Sentences index that qualify for summary.
+        """
         return self.cluster(ratio)

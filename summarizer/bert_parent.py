@@ -29,11 +29,10 @@ class BertParent(object):
         custom_tokenizer: PreTrainedTokenizer=None
     ):
         """
-        :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used
-        :param custom_model: This is optional if a custom bert model is used
-        :param custom_tokenizer: Place to use custom tokenizer
+        :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used.
+        :param custom_model: This is optional if a custom bert model is used.
+        :param custom_tokenizer: Place to use custom tokenizer.
         """
-
         base_model, base_tokenizer = self.MODELS.get(model, (None, None))
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -54,8 +53,8 @@ class BertParent(object):
         """
         Tokenizes the text input.
 
-        :param text: Text to tokenize
-        :return: Returns a torch tensor
+        :param text: Text to tokenize.
+        :return: Returns a torch tensor.
         """
         tokenized_text = self.tokenizer.tokenize(text)
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
@@ -87,16 +86,15 @@ class BertParent(object):
     ) -> torch.Tensor:
 
         """
-        Extracts the embeddings for the given text
+        Extracts the embeddings for the given text.
 
         :param text: The text to extract embeddings for.
-        :param hidden: The hidden layer(s) to use for a readout handler
-        :param squeeze: If we should squeeze the outputs (required for some layers)
+        :param hidden: The hidden layer(s) to use for a readout handler.
+        :param squeeze: If we should squeeze the outputs (required for some layers).
         :param reduce_option: How we should reduce the items.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
         :return: A torch vector.
         """
-
         tokens_tensor = self.tokenize_input(text)
         pooled, hidden_states = self.model(tokens_tensor)[-2:]
 
@@ -132,10 +130,10 @@ class BertParent(object):
         hidden_concat: bool = False
     ) -> ndarray:
         """
-        Create matrix from the embeddings
+        Create matrix from the embeddings.
 
-        :param content: The list of sentences
-        :param hidden: Which hidden layer to use
+        :param content: The list of sentences.
+        :param hidden: Which hidden layer to use.
         :param reduce_option: The reduce option to run.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
         :return: A numpy array matrix of the given content.
@@ -154,4 +152,13 @@ class BertParent(object):
         reduce_option: str = 'mean',
         hidden_concat: bool = False
     ) -> ndarray:
+        """
+        Create matrix from the embeddings.
+
+        :param content: The list of sentences.
+        :param hidden: Which hidden layer to use.
+        :param reduce_option: The reduce option to run.
+        :param hidden_concat: Whether or not to concat multiple hidden layers.
+        :return: A numpy array matrix of the given content.
+        """
         return self.create_matrix(content, hidden, reduce_option, hidden_concat)

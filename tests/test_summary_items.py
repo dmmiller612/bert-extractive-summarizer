@@ -50,6 +50,22 @@ def passage():
     '''
 
 
+def test_elbow_calculation(summarizer, passage):
+    res = summarizer.calculate_elbow(passage, k_max=5)
+    assert len(res) == 4
+
+
+def test_optimal_elbow_calculation(summarizer, passage):
+    res = summarizer.calculate_optimal_k(passage, k_max=6)
+    assert type(res) == int
+
+
+def test_list_handling(summarizer, passage):
+    res = summarizer(passage, num_sentences=3, return_as_list=True)
+    assert type(res) == list
+    assert len(res) == 3
+
+
 def test_multi_hidden(summarizer_multi_hidden, passage):
     res = summarizer_multi_hidden(passage, num_sentences=5, min_length=40, max_length=500)
     assert len(res) > 10

@@ -10,6 +10,12 @@ from summarizer.sentence_handler import SentenceHandler
 class CoreferenceHandler(SentenceHandler):
 
     def __init__(self, spacy_model: str = 'en_core_web_sm', greedyness: float = 0.45):
+        """
+        Corefence handler. Only works with spacy < 3.0.
+
+        :param spacy_model: The spacy model to use as default.
+        :param greedyness: The greedyness factor.
+        """
         self.nlp = spacy.load(spacy_model)
         neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
 

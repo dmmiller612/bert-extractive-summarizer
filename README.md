@@ -28,8 +28,8 @@ The default model is small English spaCy model (en_core_web_sm, 11Mb) and is ins
 
 Example: installing medium (91 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models)). 
 ```bash
-pip install spacy==2.1.3
-pip install transformers==2.2.2
+pip install spacy
+pip install transformers # > 2.2.0
 pip install neuralcoref
 
 python -m spacy download en_core_web_md
@@ -150,6 +150,32 @@ The building sold fairly quickly after being publicly placed on the market only 
 The incentive to sell the building at such a huge loss was due to the soaring rent the owners pay to Cooper Union, a New York college, for the land under the building.'
 Still the building is among the best known in the city, even to people who have never been to New York.
 """
+```
+
+
+### Calculating Elbow
+
+As of bert-extractive-summarizer version 0.7.1, you can also calculate ELBOW to determine the optimal cluster. Below 
+shows a sample example in how to retrieve the list of inertias.
+
+```python
+from summarizer import Summarizer
+
+body = 'Your Text here.'
+model = Summarizer()
+res = model.calculate_elbow(body, k_max=10)
+print(res)
+```
+
+You can also find the optimal number of sentences with elbow using the following algorithm.
+
+```python
+from summarizer import Summarizer
+
+body = 'Your Text here.'
+model = Summarizer()
+res = model.calculate_optimal_k(body, k_max=10)
+print(res)
 ```
 
 ## Summarizer Options

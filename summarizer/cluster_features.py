@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import Dict, List
 
 import numpy as np
 from numpy import ndarray
@@ -17,7 +17,7 @@ class ClusterFeatures(object):
         features: ndarray,
         algorithm: str = 'kmeans',
         pca_k: int = None,
-        random_state: int = 12345
+        random_state: int = 12345,
     ):
         """
         :param features: the embedding matrix created by bert parent.
@@ -121,7 +121,8 @@ class ClusterFeatures(object):
             delta_2.append(delta_1[i] - delta_1[i-1] if i > 1 else 0.0)
 
         for j in range(len(inertias)):
-            strength = 0 if j <= 1 or j == len(inertias) -1 else delta_2[j+1] - delta_1[j+1]
+            strength = 0 if j <= 1 or j == len(
+                inertias) - 1 else delta_2[j+1] - delta_1[j+1]
 
             if strength > max_strength:
                 max_strength = strength
@@ -129,7 +130,8 @@ class ClusterFeatures(object):
 
         return k
 
-    def cluster(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
+    def cluster(self, ratio: float = 0.1, num_sentences: int = None) -> \
+            List[int]:
         """
         Clusters sentences based on the ratio.
 
@@ -154,7 +156,8 @@ class ClusterFeatures(object):
         sorted_values = sorted(cluster_args.values())
         return sorted_values
 
-    def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
+    def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> \
+            List[int]:
         """
         Clusters sentences based on the ratio.
 

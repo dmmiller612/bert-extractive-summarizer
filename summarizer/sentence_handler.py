@@ -17,12 +17,14 @@ class SentenceHandler(object):
             # Supports spacy 2.0
             self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
             self.is_spacy_3 = False
-        except:
+        except Exception:
             # Supports spacy 3.0
             self.nlp.add_pipe("sentencizer")
             self.is_spacy_3 = True
 
-    def sentence_processor(self, doc, min_length: int = 40, max_length: int = 600) -> List[str]:
+    def sentence_processor(self, doc,
+                           min_length: int = 40,
+                           max_length: int = 600) -> List[str]:
         """
         Processes a given spacy document and turns them into sentences.
 
@@ -43,7 +45,9 @@ class SentenceHandler(object):
 
         return to_return
 
-    def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
+    def process(self, body: str,
+                min_length: int = 40,
+                max_length: int = 600) -> List[str]:
         """
         Processes the content sentences.
 
@@ -55,7 +59,9 @@ class SentenceHandler(object):
         doc = self.nlp(body)
         return self.sentence_processor(doc, min_length, max_length)
 
-    def __call__(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
+    def __call__(self, body: str,
+                 min_length: int = 40,
+                 max_length: int = 600) -> List[str]:
         """
         Processes the content sentences.
 

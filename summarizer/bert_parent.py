@@ -3,7 +3,10 @@ from typing import List, Union
 import numpy as np
 import torch
 from numpy import ndarray
-from transformers import *
+from transformers import (AlbertModel, AlbertTokenizer, BertModel,
+                          BertTokenizer, DistilBertModel, DistilBertTokenizer,
+                          PreTrainedModel, PreTrainedTokenizer, XLMModel,
+                          XLMTokenizer, XLNetModel, XLNetTokenizer)
 
 
 class BertParent(object):
@@ -25,8 +28,8 @@ class BertParent(object):
     def __init__(
         self,
         model: str,
-        custom_model: PreTrainedModel=None,
-        custom_tokenizer: PreTrainedTokenizer=None
+        custom_model: PreTrainedModel = None,
+        custom_tokenizer: PreTrainedTokenizer = None,
     ):
         """
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used.
@@ -35,12 +38,14 @@ class BertParent(object):
         """
         base_model, base_tokenizer = self.MODELS.get(model, (None, None))
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu")
 
         if custom_model:
             self.model = custom_model.to(self.device)
         else:
-            self.model = base_model.from_pretrained(model, output_hidden_states=True).to(self.device)
+            self.model = base_model.from_pretrained(
+                model, output_hidden_states=True).to(self.device)
 
         if custom_tokenizer:
             self.tokenizer = custom_tokenizer
@@ -60,7 +65,8 @@ class BertParent(object):
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
         return torch.tensor([indexed_tokens]).to(self.device)
 
-    def _pooled_handler(self, hidden: torch.Tensor, reduce_option: str) -> torch.Tensor:
+    def _pooled_handler(self, hidden: torch.Tensor,
+                        reduce_option: str) -> torch.Tensor:
         """
         Handles torch tensor.
 
@@ -81,10 +87,9 @@ class BertParent(object):
         self,
         text: str,
         hidden: Union[List[int], int] = -2,
-        reduce_option: str ='mean',
-        hidden_concat: bool = False
+        reduce_option: str = 'mean',
+        hidden_concat: bool = False,
     ) -> torch.Tensor:
-
         """
         Extracts the embeddings for the given text.
 
@@ -127,7 +132,7 @@ class BertParent(object):
         content: List[str],
         hidden: Union[List[int], int] = -2,
         reduce_option: str = 'mean',
-        hidden_concat: bool = False
+        hidden_concat: bool = False,
     ) -> ndarray:
         """
         Create matrix from the embeddings.
@@ -148,9 +153,9 @@ class BertParent(object):
     def __call__(
         self,
         content: List[str],
-        hidden: int= -2,
+        hidden: int = -2,
         reduce_option: str = 'mean',
-        hidden_concat: bool = False
+        hidden_concat: bool = False,
     ) -> ndarray:
         """
         Create matrix from the embeddings.

@@ -72,7 +72,7 @@ class ModelProcessor(object):
         :param content: Content list of sentences.
         :param ratio: The ratio to use for clustering.
         :param algorithm: Type of algorithm to use for clustering.
-        :param use_first: Whether to use first sentence (helpful for news stories, etc).
+        :param use_first: Return the first sentence in the output (helpful for news stories, etc).
         :param num_sentences: Number of sentences to use for summarization.
         :return: A tuple of summarized sentences and embeddings
         """

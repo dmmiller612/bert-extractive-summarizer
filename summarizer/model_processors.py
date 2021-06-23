@@ -1,7 +1,16 @@
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from transformers import *
+from transformers import (AlbertModel, AlbertTokenizer, BartModel,
+                          BartTokenizer, BertModel, BertTokenizer,
+                          CamembertModel, CamembertTokenizer, CTRLModel,
+                          CTRLTokenizer, DistilBertModel, DistilBertTokenizer,
+                          GPT2Model, GPT2Tokenizer, LongformerModel,
+                          LongformerTokenizer, OpenAIGPTModel,
+                          OpenAIGPTTokenizer, PreTrainedModel,
+                          PreTrainedTokenizer, RobertaModel, RobertaTokenizer,
+                          TransfoXLModel, TransfoXLTokenizer, XLMModel,
+                          XLMTokenizer, XLNetModel, XLNetTokenizer)
 
 from summarizer.bert_parent import BertParent
 from summarizer.cluster_features import ClusterFeatures
@@ -14,7 +23,7 @@ class ModelProcessor(object):
         'mean': np.mean,
         'min': np.min,
         'median': np.median,
-        'max': np.max
+        'max': np.max,
     }
 
     def __init__(
@@ -70,8 +79,10 @@ class ModelProcessor(object):
         if num_sentences is not None:
             num_sentences = num_sentences if use_first else num_sentences
 
-        hidden = self.model(content, self.hidden, self.reduce_option, hidden_concat=self.hidden_concat)
-        hidden_args = ClusterFeatures(hidden, algorithm, random_state=self.random_state).cluster(ratio, num_sentences)
+        hidden = self.model(
+            content, self.hidden, self.reduce_option, hidden_concat=self.hidden_concat)
+        hidden_args = ClusterFeatures(
+            hidden, algorithm, random_state=self.random_state).cluster(ratio, num_sentences)
 
         if use_first:
 
@@ -104,7 +115,8 @@ class ModelProcessor(object):
         :param num_sentences: Number of sentences. Overrides ratio.
         :return: summarized sentences
         """
-        sentences, _ = self.cluster_runner(content, ratio, algorithm, use_first, num_sentences)
+        sentences, _ = self.cluster_runner(
+            content, ratio, algorithm, use_first, num_sentences)
         return sentences
 
     def __retrieve_summarized_embeddings(
@@ -124,7 +136,8 @@ class ModelProcessor(object):
         :param use_first: Whether to use first sentence
         :return: Summarized embeddings
         """
-        _, embeddings = self.cluster_runner(content, ratio, algorithm, use_first, num_sentences)
+        _, embeddings = self.cluster_runner(
+            content, ratio, algorithm, use_first, num_sentences)
         return embeddings
 
     def calculate_elbow(
@@ -150,8 +163,10 @@ class ModelProcessor(object):
         if k_max is None:
             k_max = len(sentences) - 1
 
-        hidden = self.model(sentences, self.hidden, self.reduce_option, hidden_concat=self.hidden_concat)
-        elbow = ClusterFeatures(hidden, algorithm, random_state=self.random_state).calculate_elbow(k_max)
+        hidden = self.model(sentences, self.hidden,
+                            self.reduce_option, hidden_concat=self.hidden_concat)
+        elbow = ClusterFeatures(
+            hidden, algorithm, random_state=self.random_state).calculate_elbow(k_max)
 
         return elbow
 
@@ -161,7 +176,7 @@ class ModelProcessor(object):
         algorithm: str = 'kmeans',
         min_length: int = 40,
         max_length: int = 600,
-        k_max: int = None
+        k_max: int = None,
     ):
         """
         Calculates the optimal Elbow K.
@@ -178,8 +193,10 @@ class ModelProcessor(object):
         if k_max is None:
             k_max = len(sentences) - 1
 
-        hidden = self.model(sentences, self.hidden, self.reduce_option, hidden_concat=self.hidden_concat)
-        optimal_k = ClusterFeatures(hidden, algorithm, random_state=self.random_state).calculate_optimal_cluster(k_max)
+        hidden = self.model(sentences, self.hidden,
+                            self.reduce_option, hidden_concat=self.hidden_concat)
+        optimal_k = ClusterFeatures(
+            hidden, algorithm, random_state=self.random_state).calculate_optimal_cluster(k_max)
 
         return optimal_k
 
@@ -192,7 +209,7 @@ class ModelProcessor(object):
         use_first: bool = True,
         algorithm: str = 'kmeans',
         num_sentences: int = None,
-        aggregate: str = None
+        aggregate: str = None,
     ) -> Optional[np.ndarray]:
         """
         Preprocesses the sentences, runs the clusters to find the centroids, then combines the embeddings.
@@ -210,10 +227,12 @@ class ModelProcessor(object):
         sentences = self.sentence_handler(body, min_length, max_length)
 
         if sentences:
-            embeddings = self.__retrieve_summarized_embeddings(sentences, ratio, algorithm, use_first, num_sentences)
+            embeddings = self.__retrieve_summarized_embeddings(
+                sentences, ratio, algorithm, use_first, num_sentences)
 
             if aggregate is not None:
-                assert aggregate in ['mean', 'median', 'max', 'min'], "aggregate must be mean, min, max, or median"
+                assert aggregate in [
+                    'mean', 'median', 'max', 'min'], "aggregate must be mean, min, max, or median"
                 embeddings = self.aggregate_map[aggregate](embeddings, axis=0)
 
             return embeddings
@@ -247,7 +266,8 @@ class ModelProcessor(object):
         sentences = self.sentence_handler(body, min_length, max_length)
 
         if sentences:
-            sentences = self.__run_clusters(sentences, ratio, algorithm, use_first, num_sentences)
+            sentences = self.__run_clusters(
+                sentences, ratio, algorithm, use_first, num_sentences)
 
         if return_as_list:
             return sentences
@@ -342,7 +362,7 @@ class TransformerSummarizer(ModelProcessor):
         reduce_option: str = 'mean',
         sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345,
-        hidden_concat: bool = False
+        hidden_concat: bool = False,
     ):
         """
         :param transformer_type: The Transformer type, such as Bert, GPT2, DistilBert, etc.
@@ -359,12 +379,14 @@ class TransformerSummarizer(ModelProcessor):
             self.MODEL_DICT['Albert'] = (AlbertModel, AlbertTokenizer)
             self.MODEL_DICT['Camembert'] = (CamembertModel, CamembertTokenizer)
             self.MODEL_DICT['Bart'] = (BartModel, BartTokenizer)
-            self.MODEL_DICT['Longformer'] = (LongformerModel, LongformerTokenizer)
-        except Exception as e:
+            self.MODEL_DICT['Longformer'] = (
+                LongformerModel, LongformerTokenizer)
+        except Exception:
             pass  # older transformer version
 
         model_clz, tokenizer_clz = self.MODEL_DICT[transformer_type]
-        model = model_clz.from_pretrained(transformer_model_key, output_hidden_states=True)
+        model = model_clz.from_pretrained(
+            transformer_model_key, output_hidden_states=True)
 
         tokenizer = tokenizer_clz.from_pretrained(
             transformer_tokenizer_key if transformer_tokenizer_key is not None else transformer_model_key

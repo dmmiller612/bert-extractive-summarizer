@@ -9,7 +9,8 @@ from summarizer.sentence_handler import SentenceHandler
 
 class CoreferenceHandler(SentenceHandler):
 
-    def __init__(self, spacy_model: str = 'en_core_web_sm', greedyness: float = 0.45):
+    def __init__(self, spacy_model: str = 'en_core_web_sm',
+                 greedyness: float = 0.45):
         """
         Corefence handler. Only works with spacy < 3.0.
 
@@ -30,4 +31,6 @@ class CoreferenceHandler(SentenceHandler):
         """
         doc = self.nlp(body)._.coref_resolved
         doc = self.nlp(doc)
-        return [c.string.strip() for c in doc.sents if max_length > len(c.string.strip()) > min_length]
+        return [c.string.strip()
+                for c in doc.sents
+                if max_length > len(c.string.strip()) > min_length]

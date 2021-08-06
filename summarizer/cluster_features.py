@@ -117,12 +117,11 @@ class ClusterFeatures(object):
         inertias = self.calculate_elbow(k_max)
 
         for i in range(len(inertias)):
-            delta_1.append(inertias[i] - inertias[i-1] if i > 0 else 0.0)
-            delta_2.append(delta_1[i] - delta_1[i-1] if i > 1 else 0.0)
+            delta_1.append(inertias[i] - inertias[i - 1] if i > 0 else 0.0)
+            delta_2.append(delta_1[i] - delta_1[i - 1] if i > 1 else 0.0)
 
         for j in range(len(inertias)):
-            strength = 0 if j <= 1 or j == len(
-                inertias) - 1 else delta_2[j+1] - delta_1[j+1]
+            strength = 0 if j <= 1 or j == leinertias) - 1 else delta_2[j + 1] - delta_1[j + 1]
 
             if strength > max_strength:
                 max_strength = strength
@@ -130,8 +129,7 @@ class ClusterFeatures(object):
 
         return k
 
-    def cluster(self, ratio: float = 0.1, num_sentences: int = None) -> \
-            List[int]:
+    def cluster(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
         """
         Clusters sentences based on the ratio.
 
@@ -156,8 +154,7 @@ class ClusterFeatures(object):
         sorted_values = sorted(cluster_args.values())
         return sorted_values
 
-    def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> \
-            List[int]:
+    def __call__(self, ratio: float = 0.1, num_sentences: int = None) -> List[int]:
         """
         Clusters sentences based on the ratio.
 

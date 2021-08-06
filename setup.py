@@ -2,7 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(name='bert-extractive-summarizer',
-      version='0.8.0',
+      version='0.8.1',
       description='Extractive Text Summarization with BERT',
       keywords=['bert', 'pytorch', 'machine learning',
                 'deep learning', 'extractive summarization', 'summary'],

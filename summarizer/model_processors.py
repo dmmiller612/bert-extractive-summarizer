@@ -18,7 +18,6 @@ from summarizer.sentence_handler import SentenceHandler
 
 
 class ModelProcessor(object):
-
     aggregate_map = {
         'mean': np.mean,
         'min': np.min,
@@ -379,8 +378,7 @@ class TransformerSummarizer(ModelProcessor):
             self.MODEL_DICT['Albert'] = (AlbertModel, AlbertTokenizer)
             self.MODEL_DICT['Camembert'] = (CamembertModel, CamembertTokenizer)
             self.MODEL_DICT['Bart'] = (BartModel, BartTokenizer)
-            self.MODEL_DICT['Longformer'] = (
-                LongformerModel, LongformerTokenizer)
+            self.MODEL_DICT['Longformer'] = (LongformerModel, LongformerTokenizer)
         except Exception:
             pass  # older transformer version
 

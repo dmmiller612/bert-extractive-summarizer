@@ -10,7 +10,6 @@ from transformers import (AlbertModel, AlbertTokenizer, BertModel,
 
 
 class BertParent(object):
-
     """
     Base handler for BERT models.
     """

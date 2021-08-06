@@ -121,7 +121,7 @@ class ClusterFeatures(object):
             delta_2.append(delta_1[i] - delta_1[i - 1] if i > 1 else 0.0)
 
         for j in range(len(inertias)):
-            strength = 0 if j <= 1 or j == leinertias) - 1 else delta_2[j + 1] - delta_1[j + 1]
+            strength = 0 if j <= 1 or j == len(inertias) - 1 else delta_2[j + 1] - delta_1[j + 1]
 
             if strength > max_strength:
                 max_strength = strength

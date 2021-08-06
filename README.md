@@ -29,7 +29,7 @@ The default model is small English spaCy model (en_core_web_sm, 11Mb) and is ins
 Example: installing medium (91 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models)). 
 ```bash
 pip install spacy
-pip install transformers # > 2.2.0
+pip install transformers # > 4.0.0
 pip install neuralcoref
 
 python -m spacy download en_core_web_md

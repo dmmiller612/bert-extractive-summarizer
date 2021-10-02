@@ -15,8 +15,8 @@ def custom_summarizer():
 
 @pytest.fixture()
 def summarizer():
-    device_idx = torch.cuda.device_count() - 1  # Use the last GPU
-    return Summarizer('distilbert-base-uncased', device_idx=device_idx)
+    gpu_id = torch.cuda.device_count() - 1  # Use the last GPU
+    return Summarizer('distilbert-base-uncased', gpu_id=gpu_id)
 
 
 @pytest.fixture()

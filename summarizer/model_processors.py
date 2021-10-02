@@ -35,7 +35,7 @@ class ModelProcessor(object):
         sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345,
         hidden_concat: bool = False,
-        device_idx: int = 0,
+        gpu_id: int = 0,
     ):
         """
         This is the parent Bert Summarizer model. New methods should implement this class.
@@ -49,10 +49,10 @@ class ModelProcessor(object):
         CoreferenceHandler instance
         :param random_state: The random state to reproduce summarizations.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
-        :param device_idx: GPU device index if CUDA is available. 
+        :param gpu_id: GPU device index if CUDA is available. 
         """
         np.random.seed(random_state)
-        self.model = BertParent(model, custom_model, custom_tokenizer, device_idx)
+        self.model = BertParent(model, custom_model, custom_tokenizer, gpu_id)
         self.hidden = hidden
         self.reduce_option = reduce_option
         self.sentence_handler = sentence_handler
@@ -318,7 +318,7 @@ class Summarizer(ModelProcessor):
         sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345,
         hidden_concat: bool = False,
-        device_idx: int = 0,
+        gpu_id: int = 0,
     ):
         """
         This is the main Bert Summarizer class.
@@ -332,11 +332,11 @@ class Summarizer(ModelProcessor):
         :param language: Which language to use for training.
         :param random_state: The random state to reproduce summarizations.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
-        :param device_idx: GPU device index if CUDA is available. 
+        :param gpu_id: GPU device index if CUDA is available. 
         """
 
         super(Summarizer, self).__init__(
-            model, custom_model, custom_tokenizer, hidden, reduce_option, sentence_handler, random_state, hidden_concat, device_idx
+            model, custom_model, custom_tokenizer, hidden, reduce_option, sentence_handler, random_state, hidden_concat, gpu_id
         )
 
 
@@ -366,7 +366,7 @@ class TransformerSummarizer(ModelProcessor):
         sentence_handler: SentenceHandler = SentenceHandler(),
         random_state: int = 12345,
         hidden_concat: bool = False,
-        device_idx: int = 0,
+        gpu_id: int = 0,
     ):
         """
         :param transformer_type: The Transformer type, such as Bert, GPT2, DistilBert, etc.
@@ -377,7 +377,7 @@ class TransformerSummarizer(ModelProcessor):
         :param sentence_handler: The sentence handler class to process the raw text.
         :param random_state: The random state to use.
         :param hidden_concat: Deprecated hidden concat option.
-        :param device_idx: GPU device index if CUDA is available. 
+        :param gpu_id: GPU device index if CUDA is available. 
         """
         try:
             self.MODEL_DICT['Roberta'] = (RobertaModel, RobertaTokenizer)
@@ -397,5 +397,5 @@ class TransformerSummarizer(ModelProcessor):
         )
 
         super().__init__(
-            None, model, tokenizer, hidden, reduce_option, sentence_handler, random_state, hidden_concat, device_idx
+            None, model, tokenizer, hidden, reduce_option, sentence_handler, random_state, hidden_concat, gpu_id
         )

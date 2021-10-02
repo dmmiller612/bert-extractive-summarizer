@@ -29,7 +29,7 @@ class BertParent(object):
         model: str,
         custom_model: PreTrainedModel = None,
         custom_tokenizer: PreTrainedTokenizer = None,
-        device_idx: int = 0,
+        gpu_id: int = 0,
     ):
         """
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used.
@@ -41,10 +41,10 @@ class BertParent(object):
         self.device = torch.device("cpu")
         if torch.cuda.is_available():
             assert (
-                isinstance(device_idx, int) and (0 <= device_idx and device_idx < torch.cuda.device_count())
-            ), f"`device_idx` must be an integer between 0 to {torch.cuda.device_count() - 1}. But got: {device_idx}"
+                isinstance(gpu_id, int) and (0 <= gpu_id and gpu_id < torch.cuda.device_count())
+            ), f"`gpu_id` must be an integer between 0 to {torch.cuda.device_count() - 1}. But got: {gpu_id}"
 
-            self.device = torch.device(f"cuda:{device_idx}")
+            self.device = torch.device(f"cuda:{gpu_id}")
 
         if custom_model:
             self.model = custom_model.to(self.device)

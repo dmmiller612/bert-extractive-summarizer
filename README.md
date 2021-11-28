@@ -10,11 +10,25 @@ the sentences that are closest to the cluster's centroids. This library also use
 https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
 the neuralcoref library can be tweaked in the CoreferenceHandler class.
 
+As of version 0.4.2, by default, CUDA is used if a gpu is available.
+
 Paper: https://arxiv.org/abs/1906.04165
 
 ### Try the Online Demo:
 
 [Distill Bert Summarization Demo](https://smrzr.io)
+
+# Table of Contents
+1. [Install](#install)
+2. [Examples](#examples)
+   1. [Simple Example](#simple-example)
+   2. [SBert](#use-sbert)
+   3. [Retrieve Embeddings](#retrieve-embeddings)
+   4. [Use Coreference](#use-coreference)
+   5. [Custom Model Example](#custom-model-example)
+   6. [Large Example](#large-example)
+3. [Calculating Elbow](#calculating-elbow)
+4. [Running the Service](#running-the-service)
 
 ## Install
 
@@ -22,22 +36,7 @@ Paper: https://arxiv.org/abs/1906.04165
 pip install bert-extractive-summarizer
 ```
 
-#### Coreference functionality with neuralcoref requires a spaCy model, which has to be downloaded separately.
- 
-The default model is small English spaCy model (en_core_web_sm, 11Mb) and is installed automaticaly with this package. To use other model you'll have to install it manually.
-
-Example: installing medium (91 Mb) English model (for more models see [spaCy documentation](https://spacy.io/usage/models)). 
-```bash
-pip install spacy
-pip install transformers # > 4.0.0
-pip install neuralcoref
-
-python -m spacy download en_core_web_md
-```
-
-## How to Use
-
-As of version 0.4.2, by default, CUDA is used if a gpu is available.
+## Examples
 
 #### Simple Example
 ```python
@@ -62,6 +61,27 @@ result = model(body, ratio=0.2)  # Specified with ratio
 result = model(body, num_sentences=3)  # Will return 3 sentences 
 ```
 
+#### Use SBert
+One can use Sentence Bert with bert-extractive-summarizer with the newest version. It is based off the paper here:
+https://arxiv.org/abs/1908.10084, and the library here: https://www.sbert.net/. To get started,
+first install SBERT:
+
+```
+pip install -U sentence-transformers
+```
+
+Then a simple example is the following:
+
+```python
+from summarizer.sbert import SBertSummarizer
+
+body = 'Text body that you want to summarize with BERT'
+model = SBertSummarizer('paraphrase-MiniLM-L6-v2')
+result = model(body, num_sentences=3)
+```
+
+It is worth noting that all the features that you can do with the main Summarizer class, you can also do with SBert.
+
 #### Retrieve Embeddings
 You can also retrieve the embeddings of the summarization. Examples are below:
 
@@ -74,7 +94,18 @@ result = model.run_embeddings(body, num_sentences=3)  # Will return (3, N) embed
 result = model.run_embeddings(body, num_sentences=3, aggregate='mean')  # Will return Mean aggregate over embeddings. 
 ```
 
-#### Simple Example with coreference
+#### Use Coreference
+First ensure you have installed neuralcoref and spacy. It is worth noting that neuralcoref does not work with spacy > 0.2.1.
+```bash
+pip install spacy
+pip install transformers # > 4.0.0
+pip install neuralcoref
+
+python -m spacy download en_core_web_md
+```
+
+Then to to use coreference, run the following:
+
 ```python
 from summarizer import Summarizer
 from summarizer.coreference_handler import CoreferenceHandler
@@ -91,7 +122,7 @@ model(body)
 model(body2)
 ```
 
-#### Simple Example with custom model (we always have to set output_hidden_states=True in model config)
+#### Custom Model Example
 ```python
 from transformers import *
 
@@ -151,7 +182,6 @@ The incentive to sell the building at such a huge loss was due to the soaring re
 Still the building is among the best known in the city, even to people who have never been to New York.
 """
 ```
-
 
 ### Calculating Elbow
 

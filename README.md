@@ -38,7 +38,7 @@ pip install bert-extractive-summarizer
 
 ## Examples
 
-#### Simple Example
+### Simple Example
 ```python
 from summarizer import Summarizer
 
@@ -61,7 +61,7 @@ result = model(body, ratio=0.2)  # Specified with ratio
 result = model(body, num_sentences=3)  # Will return 3 sentences 
 ```
 
-#### Use SBert
+### Use SBert
 One can use Sentence Bert with bert-extractive-summarizer with the newest version. It is based off the paper here:
 https://arxiv.org/abs/1908.10084, and the library here: https://www.sbert.net/. To get started,
 first install SBERT:
@@ -82,7 +82,7 @@ result = model(body, num_sentences=3)
 
 It is worth noting that all the features that you can do with the main Summarizer class, you can also do with SBert.
 
-#### Retrieve Embeddings
+### Retrieve Embeddings
 You can also retrieve the embeddings of the summarization. Examples are below:
 
 ```python
@@ -94,7 +94,7 @@ result = model.run_embeddings(body, num_sentences=3)  # Will return (3, N) embed
 result = model.run_embeddings(body, num_sentences=3, aggregate='mean')  # Will return Mean aggregate over embeddings. 
 ```
 
-#### Use Coreference
+### Use Coreference
 First ensure you have installed neuralcoref and spacy. It is worth noting that neuralcoref does not work with spacy > 0.2.1.
 ```bash
 pip install spacy
@@ -122,7 +122,7 @@ model(body)
 model(body2)
 ```
 
-#### Custom Model Example
+### Custom Model Example
 ```python
 from transformers import *
 
@@ -141,7 +141,7 @@ model(body)
 model(body2)
 ```
 
-#### Large Example
+### Large Example
 
 ```python
 from summarizer import Summarizer

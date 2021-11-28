@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from transformers import (AlbertModel, AlbertTokenizer, BartModel,
+from transformers import (AlbertModel, AlbertTokenizer, BartModel, BigBirdModel, BigBirdTokenizer,
                           BartTokenizer, BertModel, BertTokenizer,
                           CamembertModel, CamembertTokenizer, CTRLModel,
                           CTRLTokenizer, DistilBertModel, DistilBertTokenizer,
@@ -15,15 +15,10 @@ from transformers import (AlbertModel, AlbertTokenizer, BartModel,
 from summarizer.bert_parent import BertParent
 from summarizer.cluster_features import ClusterFeatures
 from summarizer.sentence_handler import SentenceHandler
+from summarizer.util import AGGREGATE_MAP
 
 
 class ModelProcessor(object):
-    aggregate_map = {
-        'mean': np.mean,
-        'min': np.min,
-        'median': np.median,
-        'max': np.max,
-    }
 
     def __init__(
         self,
@@ -234,7 +229,7 @@ class ModelProcessor(object):
             if aggregate is not None:
                 assert aggregate in [
                     'mean', 'median', 'max', 'min'], "aggregate must be mean, min, max, or median"
-                embeddings = self.aggregate_map[aggregate](embeddings, axis=0)
+                embeddings = AGGREGATE_MAP[aggregate](embeddings, axis=0)
 
             return embeddings
 
@@ -296,7 +291,7 @@ class ModelProcessor(object):
         :param max_length: Maximum length of sentence candidates to utilize for the summary.
         :param use_first: Whether or not to use the first sentence.
         :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
-        :param Number of sentences to use (overrides ratio).
+        :param num_sentences: Number of sentences to use (overrides ratio).
         :param return_as_list: Whether or not to return sentences as list.
         :return: A summary sentence.
         """
@@ -385,6 +380,7 @@ class TransformerSummarizer(ModelProcessor):
             self.MODEL_DICT['Camembert'] = (CamembertModel, CamembertTokenizer)
             self.MODEL_DICT['Bart'] = (BartModel, BartTokenizer)
             self.MODEL_DICT['Longformer'] = (LongformerModel, LongformerTokenizer)
+            self.MODEL_DICT['BigBird'] = (BigBirdModel, BigBirdTokenizer)
         except Exception:
             pass  # older transformer version
 

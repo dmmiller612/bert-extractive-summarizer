@@ -37,6 +37,20 @@ def summarizer():
     return SBertSummarizer('paraphrase-MiniLM-L6-v2')
 
 
+def test_num_sentences_wo_first(summarizer):
+    txt = """
+    A subset of machine learning is closely related to computational statistics. The study of mathematical optimization delivers methods. Theory and application domains to the field of machine learning. Data mining is a related field of study, focusing on exploratory data analysis through unsupervised learning. Some implementations of machine learning use data and neural networks in a way that mimics the working of a biological brain. In its application across business problems, machine learning is also referred to as predictive analytics.
+    """
+    result = summarizer(txt, num_sentences=3, return_as_list=True)
+    assert len(result) == 3
+
+
+def test_single_sentence_edge_case_first(summarizer):
+    txt = "This is an example for the summarizer python app."
+    result = summarizer(txt, num_sentences=3, return_as_list=True)
+    assert len(result) == 1
+
+
 def test_elbow_calculation(summarizer, passage):
     res = summarizer.calculate_elbow(passage, k_max=5)
     assert len(res) == 4
@@ -73,3 +87,4 @@ def test_num_sentences(summarizer, passage):
     result = summarizer(passage, num_sentences=3)
     result_sents = SentenceHandler().process(result)
     assert len(result_sents) == 3
+

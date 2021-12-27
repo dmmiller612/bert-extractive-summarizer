@@ -109,20 +109,31 @@ class SBertSummarizer:
         :param num_sentences: Number of sentences to use for summarization.
         :return: A tuple of summarized sentences and embeddings
         """
-        if num_sentences is not None:
-            num_sentences = num_sentences - 1 if use_first else num_sentences
-
+        first_embedding = None
         hidden = self.model(sentences)
+
+        if use_first:
+            num_sentences = num_sentences - 1 if num_sentences else num_sentences
+
+            if len(sentences) <= 1 or (num_sentences and num_sentences <= 1):
+                return sentences, hidden
+
+            first_embedding = hidden[0, :]
+            hidden = hidden[1:, :]
+
         hidden_args = ClusterFeatures(
             hidden, algorithm, random_state=self.random_state).cluster(ratio, num_sentences)
 
         if use_first:
-
+            # adjust for the first sentence to the right.
+            hidden_args = [i + 1 for i in hidden_args]
             if not hidden_args:
                 hidden_args.append(0)
 
             elif hidden_args[0] != 0:
                 hidden_args.insert(0, 0)
+
+            hidden = np.vstack([first_embedding, hidden])
 
         sentences = [sentences[j] for j in hidden_args]
         embeddings = np.asarray([hidden[j] for j in hidden_args])

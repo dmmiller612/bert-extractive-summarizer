@@ -121,22 +121,21 @@ class SBertSummarizer:
             first_embedding = hidden[0, :]
             hidden = hidden[1:, :]
 
-        hidden_args = ClusterFeatures(
+        summary_sentence_indices = ClusterFeatures(
             hidden, algorithm, random_state=self.random_state).cluster(ratio, num_sentences)
 
         if use_first:
-            # adjust for the first sentence to the right.
-            hidden_args = [i + 1 for i in hidden_args]
-            if not hidden_args:
-                hidden_args.append(0)
-
-            elif hidden_args[0] != 0:
-                hidden_args.insert(0, 0)
+            if summary_sentence_indices:
+                # adjust for the first sentence to the right.
+                summary_sentence_indices = [i + 1 for i in summary_sentence_indices]
+                summary_sentence_indices.insert(0, 0)
+            else:
+                summary_sentence_indices.append(0)
 
             hidden = np.vstack([first_embedding, hidden])
 
-        sentences = [sentences[j] for j in hidden_args]
-        embeddings = np.asarray([hidden[j] for j in hidden_args])
+        sentences = [sentences[j] for j in summary_sentence_indices]
+        embeddings = np.asarray([hidden[j] for j in summary_sentence_indices])
 
         return sentences, embeddings
 

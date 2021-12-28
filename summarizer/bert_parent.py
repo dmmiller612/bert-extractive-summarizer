@@ -9,7 +9,7 @@ from transformers import (AlbertModel, AlbertTokenizer, BertModel,
                           XLMTokenizer, XLNetModel, XLNetTokenizer)
 
 
-class BertParent(object):
+class BertParent:
     """
     Base handler for BERT models.
     """

@@ -52,6 +52,11 @@ def passage():
     '''
 
 
+def test_num_sentences(summarizer, passage):
+    result = summarizer(passage, num_sentences=3, return_as_list=True)
+    assert len(result) == 3
+
+
 def test_elbow_calculation(summarizer, passage):
     res = summarizer.calculate_elbow(passage, k_max=5)
     assert len(res) == 4
@@ -108,12 +113,6 @@ def test_do_not_use_first(summarizer, passage):
 def test_albert(custom_summarizer, passage):
     res = custom_summarizer(passage)
     assert len(res) > 10
-
-
-def test_num_sentences(summarizer, passage):
-    result = summarizer(passage, num_sentences=3)
-    result_sents = SentenceHandler().process(result)
-    assert len(result_sents) == 3
 
 
 def test_num_sentences_embeddings(summarizer, passage):

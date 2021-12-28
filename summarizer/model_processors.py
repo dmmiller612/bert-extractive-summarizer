@@ -49,36 +49,6 @@ class ModelProcessor(SummarizeParent):
         model_func = partial(model, hidden=hidden, reduce_option=reduce_option, hidden_concat=hidden_concat)
         super().__init__(model_func, sentence_handler, random_state)
 
-    def __call__(
-        self,
-        body: str,
-        ratio: float = 0.2,
-        min_length: int = 40,
-        max_length: int = 600,
-        use_first: bool = True,
-        algorithm: str = 'kmeans',
-        num_sentences: int = None,
-        return_as_list: bool = False,
-    ) -> str:
-        """
-        (utility that wraps around the run function)
-        Preprocesses the sentences, runs the clusters to find the centroids, then combines the sentences.
-
-        :param body: The raw string body to process.
-        :param ratio: Ratio of sentences to use.
-        :param min_length: Minimum length of sentence candidates to utilize for the summary.
-        :param max_length: Maximum length of sentence candidates to utilize for the summary.
-        :param use_first: Whether or not to use the first sentence.
-        :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
-        :param num_sentences: Number of sentences to use (overrides ratio).
-        :param return_as_list: Whether or not to return sentences as list.
-        :return: A summary sentence.
-        """
-        return self.run(
-            body, ratio, min_length, max_length, algorithm=algorithm, use_first=use_first, num_sentences=num_sentences,
-            return_as_list=return_as_list
-        )
-
 
 class Summarizer(ModelProcessor):
 

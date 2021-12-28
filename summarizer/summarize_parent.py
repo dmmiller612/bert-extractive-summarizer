@@ -8,6 +8,7 @@ from summarizer.util import AGGREGATE_MAP
 
 
 class SummarizeParent:
+    """General Summarizer Parent for all clustering processing."""
 
     def __init__(
         self,
@@ -16,9 +17,9 @@ class SummarizeParent:
         random_state: int = 12345
     ):
         """
-        SBert Summarizer
+        Summarizer Parent
 
-        :param model: The model for the sentence transformer.
+        :param model: The callable model for creating embeddings from sentences.
         :sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass.
         :param random_state: The random state to reproduce summarizations.
         """
@@ -63,7 +64,7 @@ class SummarizeParent:
         min_length: int = 40,
         max_length: int = 600,
         k_max: int = None,
-    ):
+    ) -> int:
         """
         Calculates the optimal Elbow K.
 
@@ -72,7 +73,7 @@ class SummarizeParent:
         :param min_length: The min length to use.
         :param max_length: The max length to use.
         :param k_max: The maximum number of clusters to search.
-        :return:
+        :return: The optimal k value as an int.
         """
         sentences = self.sentence_handler(body, min_length, max_length)
 
@@ -204,3 +205,32 @@ class SummarizeParent:
             return sentences
         else:
             return ''.join(sentences)
+
+    def __call__(
+        self,
+        body: str,
+        ratio: float = 0.2,
+        min_length: int = 40,
+        max_length: int = 600,
+        use_first: bool = True,
+        algorithm: str = 'kmeans',
+        num_sentences: int = None,
+        return_as_list: bool = False,
+    ) -> str:
+        """
+        (utility that wraps around the run function)
+        Preprocesses the sentences, runs the clusters to find the centroids, then combines the sentences.
+
+        :param body: The raw string body to process.
+        :param ratio: Ratio of sentences to use.
+        :param min_length: Minimum length of sentence candidates to utilize for the summary.
+        :param max_length: Maximum length of sentence candidates to utilize for the summary.
+        :param use_first: Whether or not to use the first sentence.
+        :param algorithm: Which clustering algorithm to use. (kmeans, gmm)
+        :param num_sentences: Number of sentences to use (overrides ratio).
+        :param return_as_list: Whether or not to return sentences as list.
+        :return: A summary sentence.
+        """
+        return self.run(body, ratio, min_length, max_length,
+                        use_first, algorithm, num_sentences, return_as_list)
+

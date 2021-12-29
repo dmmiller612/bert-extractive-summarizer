@@ -1,0 +1,16 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Build docker images
+        run: docker build -t local-test .
+      - name: Run tests
+        run: docker run --rm local-test:latest bash -i -c "pytest"

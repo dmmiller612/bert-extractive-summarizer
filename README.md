@@ -1,6 +1,6 @@
 # Bert Extractive Summarizer
 
-[![Build Status](https://travis-ci.com/dmmiller612/bert-extractive-summarizer.svg?branch=master)](https://travis-ci.com/github/dmmiller612/bert-extractive-summarizer)
+![Build Status](https://github.com/dmmiller612/bert-extractive-summarizer/actions/workflows/test.yml/badge.svg)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/dmmiller612/bert-extractive-summarizer)
 <img src="https://img.shields.io/pypi/v/bert-extractive-summarizer.svg" />
 

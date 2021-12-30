@@ -21,9 +21,9 @@ class CoreferenceHandler(SentenceABC):
         :param spacy_model: The spacy model to use as default.
         :param greedyness: The greedyness factor.
         """
-        self.nlp = spacy.load(spacy_model)
-        neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
-        super().__init__(self.nlp, is_spacy_3=False)
+        nlp = spacy.load(spacy_model)
+        neuralcoref.add_to_pipe(nlp, greedyness=greedyness)
+        super().__init__(nlp, is_spacy_3=False)
 
     def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         """

@@ -18,6 +18,8 @@ class ClusterFeatures:
         random_state: int = 12345,
     ):
         """
+        Cluster features constructor.
+
         :param features: the embedding matrix created by bert parent.
         :param algorithm: Which clustering algorithm to use.
         :param pca_k: If you want the features to be ran through pca, this is the components number.

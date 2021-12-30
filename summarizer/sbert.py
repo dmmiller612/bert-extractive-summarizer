@@ -1,6 +1,6 @@
-from summarizer.transformer_embeddings.sbert_embedding import SBertEmbedding
-from summarizer.text_processors.sentence_handler import SentenceHandler
 from summarizer.summary_processor import SummaryProcessor
+from summarizer.text_processors.sentence_handler import SentenceHandler
+from summarizer.transformer_embeddings.sbert_embedding import SBertEmbedding
 
 
 class SBertSummarizer(SummaryProcessor):

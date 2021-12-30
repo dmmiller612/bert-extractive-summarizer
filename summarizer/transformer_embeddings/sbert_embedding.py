@@ -6,27 +6,19 @@ from sentence_transformers import SentenceTransformer
 
 
 class SBertEmbedding:
-    """
-    SBert Embedding. This is for the SentenceTransformer Package.
-    """
+    """SBert Embedding. This is for the SentenceTransformer Package."""
 
-    def __init__(
-        self,
-        model: str
-    ):
+    def __init__(self, model: str):
         """
-        SBert Parent Handler
+        SBert Parent Handler.
 
-        :param model: The model string for SentenceTransformer
+        :param model: The model string for SentenceTransformer.
         """
         self.sbert_model = SentenceTransformer(model)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.sbert_model.to(self.device)
 
-    def extract_embeddings(
-        self,
-        sentences: List[str]
-    ) -> np.ndarray:
+    def extract_embeddings(self, sentences: List[str]) -> np.ndarray:
         """
         Calculates sentence embeddings.
 
@@ -36,10 +28,7 @@ class SBertEmbedding:
         embeddings = self.sbert_model.encode(sentences)
         return embeddings
 
-    def __call__(
-        self,
-        sentences: List[str]
-    ) -> np.ndarray:
+    def __call__(self, sentences: List[str]) -> np.ndarray:
         """
         Calculates sentence embeddings.
 

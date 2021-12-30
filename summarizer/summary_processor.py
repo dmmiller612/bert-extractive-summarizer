@@ -17,7 +17,7 @@ class SummaryProcessor:
         random_state: int = 12345
     ):
         """
-        Summarizer Parent
+        Summarizer Processor.
 
         :param model: The callable model for creating embeddings from sentences.
         :sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass.

@@ -1,5 +1,5 @@
 from functools import partial
-from typing import List, Union
+from typing import List, Optional, Union
 
 from transformers import (AlbertModel, AlbertTokenizer, BartModel, BigBirdModel, BigBirdTokenizer,
                           BartTokenizer, BertModel, BertTokenizer,
@@ -22,7 +22,7 @@ class BertSummarizer(SummaryProcessor):
 
     def __init__(
         self,
-        model: str = 'bert-large-uncased',
+        model: Optional[str] = 'bert-large-uncased',
         custom_model: PreTrainedModel = None,
         custom_tokenizer: PreTrainedTokenizer = None,
         hidden: Union[List[int], int] = -2,

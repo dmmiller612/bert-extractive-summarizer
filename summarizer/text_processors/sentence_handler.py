@@ -19,7 +19,7 @@ class SentenceHandler(SentenceABC):
         is_spacy_3 = False
         try:
             # Supports spacy 2.0
-            nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
+            nlp.add_pipe(nlp.create_pipe('sentencizer'))
         except Exception:
             # Supports spacy 3.0
             nlp.add_pipe("sentencizer")

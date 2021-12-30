@@ -1,30 +1,24 @@
 from typing import List
 
-from spacy.lang.en import English
+from spacy.language import Language
 
 
-class SentenceHandler(object):
+class SentenceABC:
+    """Parent Class for sentence processing."""
 
-    def __init__(self, language=English):
+    def __init__(self, nlp: Language, is_spacy_3: bool):
         """
         Base Sentence Handler with Spacy support.
 
-        :param language: Determines the language to use with spacy.
+        :param nlp: NLP Pipeline.
+        :param is_spacy_3: Whether or not we are using spacy 3.
         """
-        self.nlp = language()
+        self.nlp = nlp
+        self.is_spacy_3 = is_spacy_3
 
-        try:
-            # Supports spacy 2.0
-            self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
-            self.is_spacy_3 = False
-        except Exception:
-            # Supports spacy 3.0
-            self.nlp.add_pipe("sentencizer")
-            self.is_spacy_3 = True
-
-    def sentence_processor(self, doc,
-                           min_length: int = 40,
-                           max_length: int = 600) -> List[str]:
+    def sentence_processor(
+        self, doc, min_length: int = 40, max_length: int = 600
+    ) -> List[str]:
         """
         Processes a given spacy document and turns them into sentences.
 
@@ -45,9 +39,9 @@ class SentenceHandler(object):
 
         return to_return
 
-    def process(self, body: str,
-                min_length: int = 40,
-                max_length: int = 600) -> List[str]:
+    def process(
+        self, body: str, min_length: int = 40, max_length: int = 600
+    ) -> List[str]:
         """
         Processes the content sentences.
 
@@ -56,12 +50,11 @@ class SentenceHandler(object):
         :param max_length: Max length that the sentences mus fall under
         :return: Returns a list of sentences.
         """
-        doc = self.nlp(body)
-        return self.sentence_processor(doc, min_length, max_length)
+        raise NotImplementedError()
 
-    def __call__(self, body: str,
-                 min_length: int = 40,
-                 max_length: int = 600) -> List[str]:
+    def __call__(
+        self, body: str, min_length: int = 40, max_length: int = 600
+    ) -> List[str]:
         """
         Processes the content sentences.
 

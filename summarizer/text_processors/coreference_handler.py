@@ -1,16 +1,20 @@
 # removed previous import and related functionality since it's just a blank language model,
 #  while neuralcoref requires passing pretrained language model via spacy.load()
 
+from typing import List
+
 import neuralcoref
 import spacy
 
-from summarizer.sentence_handler import SentenceHandler
+from summarizer.text_processors.sentence_abc import SentenceABC
 
 
-class CoreferenceHandler(SentenceHandler):
+class CoreferenceHandler(SentenceABC):
+    """HuggingFace Coreference Handler."""
 
-    def __init__(self, spacy_model: str = 'en_core_web_sm',
-                 greedyness: float = 0.45):
+    def __init__(
+        self, spacy_model: str = 'en_core_web_sm', greedyness: float = 0.45
+    ):
         """
         Corefence handler. Only works with spacy < 3.0.
 
@@ -19,8 +23,9 @@ class CoreferenceHandler(SentenceHandler):
         """
         self.nlp = spacy.load(spacy_model)
         neuralcoref.add_to_pipe(self.nlp, greedyness=greedyness)
+        super().__init__(self.nlp, is_spacy_3=False)
 
-    def process(self, body: str, min_length: int = 40, max_length: int = 600):
+    def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         """
         Processes the content sentences.
 

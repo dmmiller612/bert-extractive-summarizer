@@ -3,7 +3,6 @@ import torch
 from transformers import AlbertTokenizer, AlbertModel
 
 from summarizer import Summarizer
-from summarizer.sentence_handler import SentenceHandler
 
 
 @pytest.fixture()

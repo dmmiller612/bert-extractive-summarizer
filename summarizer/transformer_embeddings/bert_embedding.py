@@ -9,10 +9,8 @@ from transformers import (AlbertModel, AlbertTokenizer, BertModel,
                           XLMTokenizer, XLNetModel, XLNetTokenizer)
 
 
-class BertParent:
-    """
-    Base handler for BERT models.
-    """
+class BertEmbedding:
+    """Bert Embedding Handler for BERT models."""
 
     MODELS = {
         'bert-base-uncased': (BertModel, BertTokenizer),
@@ -32,6 +30,8 @@ class BertParent:
         gpu_id: int = 0,
     ):
         """
+        Bert Embedding Constructor. Source for Bert embedding processing.
+
         :param model: Model is the string path for the bert weights. If given a keyword, the s3 path will be used.
         :param custom_model: This is optional if a custom bert model is used.
         :param custom_tokenizer: Place to use custom tokenizer.

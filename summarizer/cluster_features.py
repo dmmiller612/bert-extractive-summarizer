@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import numpy as np
 from numpy import ndarray
@@ -7,10 +7,8 @@ from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
 
 
-class ClusterFeatures(object):
-    """
-    Basic handling of clustering features.
-    """
+class ClusterFeatures:
+    """Basic handling of clustering features."""
 
     def __init__(
         self,
@@ -20,6 +18,8 @@ class ClusterFeatures(object):
         random_state: int = 12345,
     ):
         """
+        Cluster features constructor.
+
         :param features: the embedding matrix created by bert parent.
         :param algorithm: Which clustering algorithm to use.
         :param pca_k: If you want the features to be ran through pca, this is the components number.
@@ -34,19 +34,19 @@ class ClusterFeatures(object):
         self.pca_k = pca_k
         self.random_state = random_state
 
-    def __get_model(self, k: int):
+    def _get_model(self, k: int) -> Union[GaussianMixture, KMeans]:
         """
         Retrieve clustering model.
 
         :param k: amount of clusters.
         :return: Clustering model.
         """
-
         if self.algorithm == 'gmm':
             return GaussianMixture(n_components=k, random_state=self.random_state)
+
         return KMeans(n_clusters=k, random_state=self.random_state)
 
-    def __get_centroids(self, model):
+    def _get_centroids(self, model: Union[GaussianMixture, KMeans]) -> np.ndarray:
         """
         Retrieve centroids of model.
 
@@ -55,6 +55,7 @@ class ClusterFeatures(object):
         """
         if self.algorithm == 'gmm':
             return model.means_
+
         return model.cluster_centers_
 
     def __find_closest_args(self, centroids: np.ndarray) -> Dict:
@@ -95,13 +96,13 @@ class ClusterFeatures(object):
         inertias = []
 
         for k in range(1, min(k_max, len(self.features))):
-            model = self.__get_model(k).fit(self.features)
+            model = self._get_model(k).fit(self.features)
 
             inertias.append(model.inertia_)
 
         return inertias
 
-    def calculate_optimal_cluster(self, k_max: int):
+    def calculate_optimal_cluster(self, k_max: int) -> int:
         """
         Calculates the optimal cluster based on Elbow.
 
@@ -137,7 +138,6 @@ class ClusterFeatures(object):
         :param num_sentences: Number of sentences. Overrides ratio.
         :return: Sentences index that qualify for summary.
         """
-
         if num_sentences is not None:
             if num_sentences == 0:
                 return []
@@ -146,9 +146,9 @@ class ClusterFeatures(object):
         else:
             k = max(int(len(self.features) * ratio), 1)
 
-        model = self.__get_model(k).fit(self.features)
+        model = self._get_model(k).fit(self.features)
 
-        centroids = self.__get_centroids(model)
+        centroids = self._get_centroids(model)
         cluster_args = self.__find_closest_args(centroids)
 
         sorted_values = sorted(cluster_args.values())

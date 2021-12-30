@@ -3,11 +3,11 @@ from typing import Callable, List, Optional, Tuple, Union
 import numpy as np
 
 from summarizer.cluster_features import ClusterFeatures
-from summarizer.sentence_handler import SentenceHandler
+from summarizer.text_processors.sentence_handler import SentenceHandler
 from summarizer.util import AGGREGATE_MAP
 
 
-class SummarizeParent:
+class SummaryProcessor:
     """General Summarizer Parent for all clustering processing."""
 
     def __init__(
@@ -17,7 +17,7 @@ class SummarizeParent:
         random_state: int = 12345
     ):
         """
-        Summarizer Parent
+        Summarizer Processor.
 
         :param model: The callable model for creating embeddings from sentences.
         :sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass.

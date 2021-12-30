@@ -2,7 +2,7 @@ import pytest
 import torch
 from transformers import AlbertTokenizer, AlbertModel
 
-from summarizer import Summarizer
+from summarizer import Summarizer, TransformerSummarizer
 
 
 @pytest.fixture()
@@ -21,6 +21,11 @@ def summarizer():
 @pytest.fixture()
 def summarizer_multi_hidden():
     return Summarizer('distilbert-base-uncased', hidden=[-1,-2])
+
+
+@pytest.fixture()
+def transformer_summarizer():
+    return TransformerSummarizer('DistilBert', 'distilbert-base-uncased')
 
 
 @pytest.fixture()
@@ -49,6 +54,21 @@ def passage():
     Walter Chrysler had set out to build the tallest building in the world, a competition at that time with another Manhattan skyscraper under construction at 40 Wall Street at the south end of Manhattan. He kept secret the plans for the spire that would grace the top of the building, building it inside the structure and out of view of the public until 40 Wall Street was complete.
     Once the competitor could rise no higher, the spire of the Chrysler building was raised into view, giving it the title.
     '''
+
+
+def test_transformer_summarizer(transformer_summarizer, passage):
+    result = transformer_summarizer(passage, num_sentences=2, return_as_list=True)
+    assert len(result) == 2
+
+
+def test_single_with_use_first(transformer_summarizer, passage):
+    result = transformer_summarizer(passage, num_sentences=1, return_as_list=True)
+    assert result == ['The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price.']
+
+
+def test_single_without_use_first(transformer_summarizer, passage):
+    result = transformer_summarizer(passage, num_sentences=1, return_as_list=True, use_first=False)
+    assert len(result) == 1
 
 
 def test_num_sentences(summarizer, passage):

@@ -110,7 +110,7 @@ class SummaryProcessor:
         if use_first:
             num_sentences = num_sentences - 1 if num_sentences else num_sentences
 
-            if len(sentences) <= 1 or (num_sentences and num_sentences <= 1):
+            if len(sentences) <= 1:
                 return sentences, hidden
 
             first_embedding = hidden[0, :]

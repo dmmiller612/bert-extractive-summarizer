@@ -1,6 +1,6 @@
 import pytest
 
-from summarizer.coreference_handler import CoreferenceHandler
+from summarizer.text_processors.coreference_handler import CoreferenceHandler
 
 
 @pytest.fixture()

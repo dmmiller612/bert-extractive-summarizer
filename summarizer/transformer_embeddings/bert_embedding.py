@@ -9,9 +9,9 @@ from transformers import (AlbertModel, AlbertTokenizer, BertModel,
                           XLMTokenizer, XLNetModel, XLNetTokenizer)
 
 
-class BertParent:
+class BertEmbedding:
     """
-    Base handler for BERT models.
+    Bert Embedding Handler for BERT models.
     """
 
     MODELS = {

@@ -4,7 +4,7 @@
 import neuralcoref
 import spacy
 
-from summarizer.sentence_handler import SentenceHandler
+from summarizer.text_processors.sentence_handler import SentenceHandler
 
 
 class CoreferenceHandler(SentenceHandler):

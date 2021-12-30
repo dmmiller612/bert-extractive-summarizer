@@ -12,12 +12,13 @@ from transformers import (AlbertModel, AlbertTokenizer, BartModel, BigBirdModel,
                           TransfoXLModel, TransfoXLTokenizer, XLMModel,
                           XLMTokenizer, XLNetModel, XLNetTokenizer)
 
-from summarizer.bert_parent import BertParent
-from summarizer.sentence_handler import SentenceHandler
-from summarizer.summarize_parent import SummarizeParent
+from summarizer.transformer_embeddings.bert_embedding import BertEmbedding
+from summarizer.text_processors.sentence_handler import SentenceHandler
+from summarizer.summary_processor import SummaryProcessor
 
 
-class ModelProcessor(SummarizeParent):
+class BertSummarizer(SummaryProcessor):
+    """Summarizer based on the BERT model."""
 
     def __init__(
         self,
@@ -43,14 +44,14 @@ class ModelProcessor(SummarizeParent):
         CoreferenceHandler instance
         :param random_state: The random state to reproduce summarizations.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
-        :param gpu_id: GPU device index if CUDA is available. 
+        :param gpu_id: GPU device index if CUDA is available.
         """
-        model = BertParent(model, custom_model, custom_tokenizer, gpu_id)
+        model = BertEmbedding(model, custom_model, custom_tokenizer, gpu_id)
         model_func = partial(model, hidden=hidden, reduce_option=reduce_option, hidden_concat=hidden_concat)
         super().__init__(model_func, sentence_handler, random_state)
 
 
-class Summarizer(ModelProcessor):
+class Summarizer(BertSummarizer):
 
     def __init__(
         self,
@@ -83,7 +84,7 @@ class Summarizer(ModelProcessor):
         )
 
 
-class TransformerSummarizer(ModelProcessor):
+class TransformerSummarizer(BertSummarizer):
     """
     Newer style that has keywords for models and tokenizers, but allows the user to change the type.
     """

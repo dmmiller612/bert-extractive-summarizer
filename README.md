@@ -108,7 +108,7 @@ Then to to use coreference, run the following:
 
 ```python
 from summarizer import Summarizer
-from summarizer.coreference_handler import CoreferenceHandler
+from summarizer.text_processors.coreference_handler import CoreferenceHandler
 
 handler = CoreferenceHandler(greedyness=.4)
 # How coreference works:

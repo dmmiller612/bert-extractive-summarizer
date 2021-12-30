@@ -1,6 +1,6 @@
 import pytest
 
-from summarizer.sentence_handler import SentenceHandler
+from summarizer.text_processors.sentence_handler import SentenceHandler
 
 
 @pytest.fixture()

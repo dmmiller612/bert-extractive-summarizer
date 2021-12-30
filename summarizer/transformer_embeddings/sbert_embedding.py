@@ -5,9 +5,9 @@ import torch
 from sentence_transformers import SentenceTransformer
 
 
-class SBertParent:
+class SBertEmbedding:
     """
-    SBert Parent. This is for the SentenceTransformer Package.
+    SBert Embedding. This is for the SentenceTransformer Package.
     """
 
     def __init__(

@@ -100,7 +100,6 @@ class BertEmbedding:
 
         :param text: The text to extract embeddings for.
         :param hidden: The hidden layer(s) to use for a readout handler.
-        :param squeeze: If we should squeeze the outputs (required for some layers).
         :param reduce_option: How we should reduce the items.
         :param hidden_concat: Whether or not to concat multiple hidden layers.
         :return: A torch vector.
@@ -158,7 +157,7 @@ class BertEmbedding:
     def __call__(
         self,
         content: List[str],
-        hidden: int = -2,
+        hidden: Union[List[int], int] = -2,
         reduce_option: str = 'mean',
         hidden_concat: bool = False,
     ) -> ndarray:

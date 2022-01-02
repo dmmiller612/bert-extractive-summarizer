@@ -10,7 +10,7 @@ the sentences that are closest to the cluster's centroids. This library also use
 https://github.com/huggingface/neuralcoref library to resolve words in summaries that need more context. The greedyness of 
 the neuralcoref library can be tweaked in the CoreferenceHandler class.
 
-As of version 0.4.2, by default, CUDA is used if a gpu is available.
+As of the most recent version of bert-extractive-summarizer, by default, CUDA is used if a gpu is available.
 
 Paper: https://arxiv.org/abs/1906.04165
 
@@ -59,6 +59,17 @@ body = 'Text body that you want to summarize with BERT'
 model = Summarizer()
 result = model(body, ratio=0.2)  # Specified with ratio
 result = model(body, num_sentences=3)  # Will return 3 sentences 
+```
+
+#### Using multiple hidden layers as the embedding output
+
+You can also concat the summarizer embeddings for clustering. A simple example is below.
+
+```python
+from summarizer import Summarizer
+body = 'Text body that you want to summarize with BERT'
+model = Summarizer('distilbert-base-uncased', hidden=[-1,-2], hidden_concat=True)
+result = model(body, num_sentences=3)
 ```
 
 ### Use SBert

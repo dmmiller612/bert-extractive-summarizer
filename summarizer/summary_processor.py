@@ -204,7 +204,7 @@ class SummaryProcessor:
         if return_as_list:
             return sentences
         else:
-            return ''.join(sentences)
+            return ' '.join(sentences)
 
     def __call__(
         self,

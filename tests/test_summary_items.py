@@ -56,6 +56,11 @@ def passage():
     '''
 
 
+def test_space_in_sentences(summarizer, passage):
+    result = summarizer(passage, num_sentences=3)
+    assert result == 'The Chrysler Building, the famous art deco New York skyscraper, will be sold for a small fraction of its previous sales price. Mubadala, an Abu Dhabi investment fund, purchased 90% of the building for $800 million in 2008. He kept secret the plans for the spire that would grace the top of the building, building it inside the structure and out of view of the public until 40 Wall Street was complete.'
+
+
 def test_transformer_summarizer(transformer_summarizer, passage):
     result = transformer_summarizer(passage, num_sentences=2, return_as_list=True)
     assert len(result) == 2

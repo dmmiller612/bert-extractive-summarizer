@@ -1,3 +1,6 @@
+
+modify with chinese compatible
+
 # Bert Extractive Summarizer
 
 ![Build Status](https://github.com/dmmiller612/bert-extractive-summarizer/actions/workflows/test.yml/badge.svg)

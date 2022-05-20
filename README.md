@@ -1,4 +1,7 @@
-# Bert Extractive Summarizer
+
+modify with chinese compatible
+
+# Bert Extractive Summarizer(modify with chinese compatible)
 
 ![Build Status](https://github.com/dmmiller612/bert-extractive-summarizer/actions/workflows/test.yml/badge.svg)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/dmmiller612/bert-extractive-summarizer)

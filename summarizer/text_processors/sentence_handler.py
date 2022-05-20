@@ -1,6 +1,6 @@
 from typing import List
 
-from spacy.lang.en import English
+from spacy.lang.zh import Chinese
 from spacy.language import Language
 from summarizer.text_processors.sentence_abc import SentenceABC
 
@@ -8,11 +8,12 @@ from summarizer.text_processors.sentence_abc import SentenceABC
 class SentenceHandler(SentenceABC):
     """Basic Sentence Handler."""
 
-    def __init__(self, language: Language = English):
+    def __init__(self, language: Language = Chinese):
         """
         Base Sentence Handler with Spacy support.
 
-        :param language: Determines the language to use with spacy.
+        :param language: Determines the language to ussummary_processor
+        e with spacy.
         """
         nlp = language()
 

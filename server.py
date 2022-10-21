@@ -1,13 +1,14 @@
 from flask import Flask
 from flask import request, jsonify, abort, make_response
-from flask_cors import CORS
-import nltk
-nltk.download('punkt')
+from flask_cors import CORS, cross_origin
+
+# import nltk
 from nltk import tokenize
 from typing import List
 import argparse
 from summarizer import Summarizer, TransformerSummarizer
 
+# nltk.download('punkt')
 
 app = Flask(__name__)
 CORS(app)
@@ -51,39 +52,36 @@ class Parser(object):
         sentences: List[str] = self.run()
         return ' '.join([sentence.strip() for sentence in sentences]).strip()
 
-@app.route('/', methods=['GET'])
-def hello_world():
-    return 'Hello, World!'
 
-@app.route('/summarize_by_ratio', methods=['POST'])
-def convert_raw_text_by_ratio():
-    ratio = float(request.args.get('ratio', 0.2))
-    min_length = int(request.args.get('min_length', 25))
-    max_length = int(request.args.get('max_length', 500))
+@app.route('/status')
+@cross_origin()
+def status():
+    return 'ok'
 
-    data = request.data
-    if not data:
-        abort(make_response(jsonify(message="Request must have raw text"), 400))
 
-    parsed = Parser(data).convert_to_paragraphs()
-    summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length)
+@app.route('/')
+@cross_origin()
+def root():
+    return 'ok'
 
-    return jsonify({
-        'summary': summary
-    })
 
-@app.route('/summarize_by_sentence', methods=['POST'])
-def convert_raw_text_by_sent():
+@app.route('/summarize', methods=['POST'])
+@cross_origin()
+def summarize_text():
+    ratio = float(request.args.get('ratio', 0.0))
     num_sentences = int(request.args.get('num_sentences', 5))
     min_length = int(request.args.get('min_length', 25))
     max_length = int(request.args.get('max_length', 500))
 
     data = request.data
     if not data:
-        abort(make_response(jsonify(message="Request must have raw text"), 400))
+        abort(make_response(jsonify(message="Request must be plain text"), 400))
 
     parsed = Parser(data).convert_to_paragraphs()
-    summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
+    if 0 < ratio < 100:
+        summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length)
+    else:
+        summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
 
     return jsonify({
         'summary': summary
@@ -92,13 +90,7 @@ def convert_raw_text_by_sent():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-model', dest='model', default='bert-base-uncased', help='The model to use')
-    parser.add_argument('-transformer-type',
-                        dest='transformer_type', default=None,
-                        help='Huggingface transformer class key')
-    parser.add_argument('-transformer-key', dest='transformer_key', default=None,
-                        help='The transformer key for huggingface. For example bert-base-uncased for Bert Class')
-    parser.add_argument('-greediness', dest='greediness', help='', default=0.45)
+    parser.add_argument('-model', dest='model', default='distilbert-base-uncased', help='The model to use')
     parser.add_argument('-reduce', dest='reduce', help='', default='mean')
     parser.add_argument('-hidden', dest='hidden', help='', default=-2)
     parser.add_argument('-port', dest='port', help='', default=8080)
@@ -106,24 +98,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.transformer_type is not None:
-        print(f"Using Model: {args.transformer_type}")
-        assert args.transformer_key is not None, 'Transformer Key cannot be none with the transformer type'
+    print(f"Using Model: {args.model}")
 
-        summarizer = TransformerSummarizer(
-            transformer_type=args.transformer_type,
-            transformer_model_key=args.transformer_key,
-            hidden=int(args.hidden),
-            reduce_option=args.reduce
-        )
-
-    else:
-        print(f"Using Model: {args.model}")
-
-        summarizer = Summarizer(
-            model=args.model,
-            hidden=int(args.hidden),
-            reduce_option=args.reduce
-        )
+    summarizer = Summarizer(
+        model=args.model,
+        hidden=int(args.hidden),
+        reduce_option=args.reduce
+    )
 
     app.run(host=args.host, port=int(args.port))

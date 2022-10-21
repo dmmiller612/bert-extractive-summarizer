@@ -23,9 +23,8 @@ Paper: https://arxiv.org/abs/1906.04165
    1. [Simple Example](#simple-example)
    2. [SBert](#use-sbert)
    3. [Retrieve Embeddings](#retrieve-embeddings)
-   4. [Use Coreference](#use-coreference)
-   5. [Custom Model Example](#custom-model-example)
-   6. [Large Example](#large-example)
+   4. [Custom Model Example](#custom-model-example)
+   5. [Large Example](#large-example)
 3. [Calculating Elbow](#calculating-elbow)
 4. [Running the Service](#running-the-service)
 
@@ -199,7 +198,7 @@ model = Summarizer(
     custom_tokenizer:  If you have a custom tokenizer, you can add the tokenizer here.
     hidden: Needs to be negative, but allows you to pick which layer you want the embeddings to come from.
     reduce_option: It can be 'mean', 'median', or 'max'. This reduces the embedding layer for pooling.
-    sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass CoreferenceHandler instance
+    sentence_handler: The handler to process sentences.
 )
 
 model(

@@ -1,4 +1,4 @@
-# Version 0.10.1
+# Version 0.11.0
 FROM python:3.9.13-slim-bullseye
 
 RUN apt-get update && \

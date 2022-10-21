@@ -9,7 +9,7 @@ def coreference_handler():
 
 
 def test_coreference_handler(coreference_handler):
-    orig = '''My sister has a dog. She loves him.'''
-    resolved = '''My sister has a dog. My sister loves a dog.'''
+    orig = "My sister has a dog. She loves him."
+    resolved = ['My sister', 'She', 'a dog', 'him']
     result = coreference_handler.process(orig, min_length=2)
-    assert ' '.join(result) == resolved
+    assert result == resolved

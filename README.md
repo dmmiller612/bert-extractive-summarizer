@@ -121,7 +121,7 @@ Then to to use coreference, run the following:
 from summarizer import Summarizer
 from summarizer.text_processors.coreference_handler import CoreferenceHandler
 
-handler = CoreferenceHandler(greedyness=.4)
+handler = CoreferenceHandler()
 # How coreference works:
 # >>>handler.process('''My sister has a dog. She loves him.''', min_length=2)
 # ['My sister has a dog.', 'My sister loves a dog.']

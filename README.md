@@ -31,7 +31,9 @@ Paper: https://arxiv.org/abs/1906.04165
 ## Install
 
 ```bash
-pip install bert-extractive-summarizer
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+python -m nltk.downloader punkt
 ```
 
 ## Examples
@@ -240,6 +242,7 @@ This endpoint accepts a text/plain input which represents the text that you want
 passed as request arguments. The accepted arguments are:
 
 * ratio: Ratio of sentences to summarize to from the original body. (default to 0.2)
+* num_sentences: Number of sentences to use. Overrides ratio if supplied
 * min_length: The minimum length to accept as a sentence. (default to 25)
 * max_length: The maximum length to accept as a sentence. (default to 500)
 

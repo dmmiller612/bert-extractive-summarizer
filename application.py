@@ -1,17 +1,30 @@
 from flask import Flask
 from flask import request, jsonify, abort, make_response
 from flask_cors import CORS, cross_origin
-
-# import nltk
+from flask.logging import default_handler
+from werkzeug.middleware.proxy_fix import ProxyFix
 from nltk import tokenize
 from typing import List
-import argparse
-from summarizer import Summarizer, TransformerSummarizer
-
-# nltk.download('punkt')
+from summarizer import Summarizer, settings
 
 app = Flask(__name__)
+app.logger.addHandler(default_handler)
+app.logger.setLevel(settings.FLASK_LOG_LEVEL)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 CORS(app)
+
+
+summarizer = Summarizer(
+    model=settings.DEFAULT_MODEL,
+    hidden=int(settings.HIDDEN),
+    reduce_option=settings.REDUCE
+)
+
+app.logger.info("Confirming environment ...")
+app.logger.info(settings.APP_ENV)
+app.logger.info(settings.APP_VERSION)
+
+app.logger.info(f"Using Model: {settings.DEFAULT_MODEL}")
 
 
 class Parser(object):
@@ -68,10 +81,10 @@ def root():
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
 def summarize_text():
-    ratio = float(request.args.get('ratio', 0.0))
-    num_sentences = int(request.args.get('num_sentences', 5))
-    min_length = int(request.args.get('min_length', 25))
-    max_length = int(request.args.get('max_length', 500))
+    ratio = float(request.args.get('ratio', settings.OUTPUT_RATIO))
+    num_sentences = int(request.args.get('num_sentences', settings.NUM_SENTENCES))
+    min_length = int(request.args.get('min_length', settings.MIN_INPUT_LENGTH))
+    max_length = int(request.args.get('max_length', settings.MAX_INPUT_LENGTH))
 
     data = request.data
     if not data:
@@ -89,21 +102,4 @@ def summarize_text():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-model', dest='model', default='distilbert-base-uncased', help='The model to use')
-    parser.add_argument('-reduce', dest='reduce', help='', default='mean')
-    parser.add_argument('-hidden', dest='hidden', help='', default=-2)
-    parser.add_argument('-port', dest='port', help='', default=8080)
-    parser.add_argument('-host', dest='host', help='', default='0.0.0.0')
-
-    args = parser.parse_args()
-
-    print(f"Using Model: {args.model}")
-
-    summarizer = Summarizer(
-        model=args.model,
-        hidden=int(args.hidden),
-        reduce_option=args.reduce
-    )
-
-    app.run(host=args.host, port=int(args.port))
+    app.run(host=settings.HOST, port=int(settings.PORT), debug=settings.FLASK_DEBUG)

@@ -17,7 +17,9 @@ RUN mkdir -p /opt/service
 COPY requirements.txt /opt/service
 COPY summarizer /opt/service/summarizer
 COPY tests /opt/service/tests
-COPY server.py /opt/service
+COPY application.py /opt/service
+COPY wsgi.py /opt/service
+COPY gunicorn_config.py /opt/service
 WORKDIR /opt/service
 
 RUN pip3 install --upgrade pip && \
@@ -26,4 +28,4 @@ RUN pip3 install --upgrade pip && \
     python3 -m nltk.downloader punkt && \
     pytest -v
 
-ENTRYPOINT ["python3", "./server.py"]
+ENTRYPOINT ["gunicorn", "--config", "gunicorn_config.py", "wsgi:app", "--no-sendfile"]

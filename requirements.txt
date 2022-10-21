@@ -10,6 +10,9 @@ argparse
 scikit-learn
 Flask
 flask-cors
+werkzeug
 nltk
 bumpversion
 pytest
+gunicorn
+gevent

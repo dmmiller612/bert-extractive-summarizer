@@ -3,9 +3,50 @@ from flask import request, jsonify, abort, make_response
 from flask_cors import CORS, cross_origin
 from flask.logging import default_handler
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_limiter import Limiter, RateLimitExceeded
+from flask_caching import Cache
 from nltk import tokenize
 from typing import List
+import hashlib
 from summarizer import Summarizer, settings
+
+
+def make_cache_key():
+    """Hash the request args and content"""
+    args = request.args
+    hs = hashlib.md5()
+    # update hash with args
+    args_key = "".join([str(v) for k, v in args.items()]) + str(request.data)
+    hs.update(args_key.encode('utf-8'))
+    cache_key = hs.hexdigest()
+    return cache_key
+
+
+def get_fwd_remote_address():
+    """
+    Try to get real client IP from 'X-Forwarded-For' headers sent by nginx
+    (renamed as 'HTTP_X_FORWARDED_FOR' by werkzeug/flask)
+    If not, fall back to whatever the load balancer gives us
+    :return: actual client ip address, not address of proxy or load balancer
+    """
+    fwd_ip = request.environ.get('HTTP_X_FORWARDED_FOR', '').split(',')[0]
+    client_ip_address = fwd_ip or request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    return client_ip_address
+
+
+# Set up simple file cache
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
+                      'CACHE_DIR': settings.CACHE_DIR,
+                      'CACHE_DEFAULT_TIMEOUT': settings.CACHE_TIMEOUT})
+
+# Set up basic rate limiting
+limiter = Limiter(
+    key_func=get_fwd_remote_address,
+    default_limits=settings.RATE_LIMIT
+)
+
+limiter.request_filter(lambda: request.method.upper() == 'OPTIONS')
+limiter.request_filter(lambda: str(request.url_rule).startswith('/static/'))
 
 app = Flask(__name__)
 app.logger.addHandler(default_handler)
@@ -13,6 +54,8 @@ app.logger.setLevel(settings.FLASK_LOG_LEVEL)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 CORS(app)
 
+cache.init_app(app)
+limiter.init_app(app)
 
 summarizer = Summarizer(
     model=settings.DEFAULT_MODEL,
@@ -67,12 +110,14 @@ class Parser(object):
 
 
 @app.route('/status')
+@limiter.exempt
 @cross_origin()
 def status():
     return 'ok'
 
 
 @app.route('/')
+@limiter.exempt
 @cross_origin()
 def root():
     return 'ok'
@@ -80,11 +125,13 @@ def root():
 
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
+@cache.cached(key_prefix=make_cache_key)
 def summarize_text():
     ratio = float(request.args.get('ratio', settings.OUTPUT_RATIO))
     num_sentences = int(request.args.get('num_sentences', settings.NUM_SENTENCES))
     min_length = int(request.args.get('min_length', settings.MIN_INPUT_LENGTH))
     max_length = int(request.args.get('max_length', settings.MAX_INPUT_LENGTH))
+    use_first = request.args.get('use_first', settings.USE_FIRST_SENTENCE) in {'True', 'true', 1, True}
 
     data = request.data
     if not data:
@@ -92,13 +139,22 @@ def summarize_text():
 
     parsed = Parser(data).convert_to_paragraphs()
     if 0 < ratio < 100:
-        summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length)
+        summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length, use_first=use_first)
     else:
-        summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
+        summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length, use_first=use_first)
 
     return jsonify({
         'summary': summary
     })
+
+
+@app.errorhandler(RateLimitExceeded)
+def ratelimit_handler(e):
+    message = "Rate limit {} exceeded."
+    return make_response(
+        jsonify(error=message.format(e.description))
+        , 429
+    )
 
 
 if __name__ == '__main__':

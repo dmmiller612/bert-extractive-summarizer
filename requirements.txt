@@ -16,3 +16,5 @@ bumpversion
 pytest
 gunicorn
 gevent
+flask-limiter
+Flask-Caching

@@ -40,7 +40,13 @@ class CoreferenceHandler(SentenceABC):
         # Need something like
         # for k, v in doc.spans.items():
         #     for i in v:
-        #         print(i, i.start, i.end)
+        #         print(i.start, i.end, i.start_char, i.end_char, i.text)
+        # See https://github.com/explosion/spaCy/discussions/11585
+        # Better:
+        # doc  = nlp(text)
+        #     for chain in doc.spans:
+        #         for span in doc.spans[chain]:
+        #             print(span.start, span.end, span.start_char, span.end_char, span.text)
 
         # return [c.string.strip()
         #         for c in doc.sents

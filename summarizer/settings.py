@@ -18,6 +18,8 @@ MIN_INPUT_LENGTH = int(os.environ.get("MIN_INPUT_LENGTH", 10))
 MAX_INPUT_LENGTH = int(os.environ.get("MAX_INPUT_LENGTH", 512))
 USE_FIRST_SENTENCE = bool(os.environ.get("USE_FIRST_SENTENCE", True))
 DEFAULT_MODEL = os.environ.get("DEFAULT_MODEL", "distilbert-base-uncased")
+DEFAULT_SBERT_MODEL = os.environ.get("DEFAULT_SBERT_MODEL", "paraphrase-MiniLM-L6-v2")
+DEFAULT_ENGINE = os.environ.get("DEFAULT_ENGINE", "sbert")
 
 HIDDEN = int(os.environ.get("HIDDEN", -2))
 REDUCE = os.environ.get("REDUCE", "mean")

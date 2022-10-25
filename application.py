@@ -9,14 +9,15 @@ from nltk import tokenize
 from typing import List
 import hashlib
 from summarizer import Summarizer, settings
+from summarizer.sbert import SBertSummarizer
 
 
 def make_cache_key():
     """Hash the request args and content"""
     args = request.args
     hs = hashlib.md5()
-    # update hash with args
-    args_key = "".join([str(v) for k, v in args.items()]) + str(request.data)
+    # update hash with args, data and url
+    args_key = "".join([str(v) for k, v in args.items()]) + str(request.data) + request.url
     hs.update(args_key.encode('utf-8'))
     cache_key = hs.hexdigest()
     return cache_key
@@ -63,11 +64,16 @@ summarizer = Summarizer(
     reduce_option=settings.REDUCE
 )
 
+sbert_summarizer = SBertSummarizer(
+    model=settings.DEFAULT_SBERT_MODEL
+)
+
 app.logger.info("Confirming environment ...")
 app.logger.info(settings.APP_ENV)
 app.logger.info(settings.APP_VERSION)
 
 app.logger.info(f"Using Model: {settings.DEFAULT_MODEL}")
+app.logger.info(f"Using SBert Model: {settings.DEFAULT_SBERT_MODEL}")
 
 
 class Parser(object):
@@ -127,11 +133,15 @@ def root():
 @cross_origin()
 @cache.cached(key_prefix=make_cache_key)
 def summarize_text():
+    engine = request.args.get('engine', settings.DEFAULT_ENGINE)
     ratio = float(request.args.get('ratio', settings.OUTPUT_RATIO))
     num_sentences = int(request.args.get('num_sentences', settings.NUM_SENTENCES))
     min_length = int(request.args.get('min_length', settings.MIN_INPUT_LENGTH))
     max_length = int(request.args.get('max_length', settings.MAX_INPUT_LENGTH))
     use_first = request.args.get('use_first', settings.USE_FIRST_SENTENCE) in {'True', 'true', 1, True}
+
+    engines = {"bert": summarizer, "sbert": sbert_summarizer}
+    summary_engine = engines.get(engine, sbert_summarizer)
 
     data = request.data
     if not data:
@@ -139,9 +149,17 @@ def summarize_text():
 
     parsed = Parser(data).convert_to_paragraphs()
     if 0 < ratio < 100:
-        summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length, use_first=use_first)
+        summary = summary_engine(parsed,
+                                 ratio=ratio,
+                                 min_length=min_length,
+                                 max_length=max_length,
+                                 use_first=use_first)
     else:
-        summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length, use_first=use_first)
+        summary = summary_engine(parsed,
+                                 num_sentences=num_sentences,
+                                 min_length=min_length,
+                                 max_length=max_length,
+                                 use_first=use_first)
 
     return jsonify({
         'summary': summary

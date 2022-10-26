@@ -6,15 +6,13 @@ from spacy.language import Language
 class SentenceABC:
     """Parent Class for sentence processing."""
 
-    def __init__(self, nlp: Language, is_spacy_3: bool):
+    def __init__(self, nlp: Language):
         """
         Base Sentence Handler with Spacy support.
 
         :param nlp: NLP Pipeline.
-        :param is_spacy_3: Whether or not we are using spacy 3.
         """
         self.nlp = nlp
-        self.is_spacy_3 = is_spacy_3
 
     def sentence_processor(
         self, doc, min_length: int = 40, max_length: int = 600
@@ -31,11 +29,7 @@ class SentenceABC:
 
         for c in doc.sents:
             if max_length > len(c.text.strip()) > min_length:
-
-                if self.is_spacy_3:
-                    to_return.append(c.text.strip())
-                else:
-                    to_return.append(c.string.strip())
+                to_return.append(c.text.strip())
 
         return to_return
 

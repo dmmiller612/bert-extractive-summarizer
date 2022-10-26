@@ -255,7 +255,7 @@ arguments for custom and different models. This can be done through a command su
 
 ```
 docker build -t summary-service -f Dockerfile.service ./
-docker run --rm -it -p 5000:5000 summary-service:latest -model bert-large-uncased
+docker run --rm -it -p 5000:8080 summary-service:latest -model bert-large-uncased
 ```
 
 Other arguments can also be passed to the server. Below includes the list of available arguments.
@@ -271,6 +271,7 @@ This endpoint accepts a text/plain input which represents the text that you want
 passed as request arguments. The accepted arguments are:
 
 * ratio: Ratio of sentences to summarize to from the original body. (default to 0.2)
+* num_sentences: Number of sentences to use. Overrides ratio if supplied
 * min_length: The minimum length to accept as a sentence. (default to 25)
 * max_length: The maximum length to accept as a sentence. (default to 500)
 

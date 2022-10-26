@@ -1,11 +1,11 @@
-# removed previous import and related functionality since it's just a blank language model,
-#  while neuralcoref requires passing pretrained language model via spacy.load()
+#  Updated to use latest Spacy 3 coreference model
 
 from typing import List
 
 import spacy
 
 from summarizer.text_processors.sentence_abc import SentenceABC
+from summarizer.text_processors.sentence_handler import SentenceHandler
 
 # Experimental coref model
 DEFAULT_MODEL = "en_coreference_web_trf"
@@ -18,12 +18,12 @@ class CoreferenceHandler(SentenceABC):
         self, spacy_model: str = DEFAULT_MODEL
     ):
         """
-        Corefence handler. Only works with spacy < 3.0.
+        Corefence handler. Updated to work with spacy > 3.0.
 
         :param spacy_model: The spacy model to use as default.
         """
         nlp = spacy.load(spacy_model)
-        super().__init__(nlp, is_spacy_3=True)
+        super().__init__(nlp)
 
     def process(self, body: str, min_length: int = 40, max_length: int = 600) -> List[str]:
         """
@@ -34,20 +34,14 @@ class CoreferenceHandler(SentenceABC):
         :param max_length: Max length that the sentences mus fall under
         :return: Returns a list of sentences.
         """
-        # doc = self.nlp(body)._.coref_resolved
         doc = self.nlp(body)
-        return [str(i) for k, v in doc.spans.items() for i in v]
-        # Need something like
-        # for k, v in doc.spans.items():
-        #     for i in v:
-        #         print(i.start, i.end, i.start_char, i.end_char, i.text)
-        # See https://github.com/explosion/spaCy/discussions/11585
-        # Better:
-        # doc  = nlp(text)
-        #     for chain in doc.spans:
-        #         for span in doc.spans[chain]:
-        #             print(span.start, span.end, span.start_char, span.end_char, span.text)
+        resolved_text = body
+        offset = 0
+        for chain in doc.spans:
+            for idx, span in enumerate(doc.spans[chain]):
+                if idx > 0:
+                    resolved_text = resolved_text[0:span.start_char + offset] + doc.spans[chain][0].text + resolved_text[span.end_char + offset:]
+                    offset += len(doc.spans[chain][0].text) - (span.end_char - span.start_char)
+        result_sents = SentenceHandler().process(resolved_text, min_length=min_length)
+        return result_sents
 
-        # return [c.string.strip()
-        #         for c in doc.sents
-        #         if max_length > len(c.string.strip()) > min_length]

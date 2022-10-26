@@ -1,6 +1,7 @@
 numpy
 torch
 spacy
+spacy-experimental
 transformers
 sentencepiece
 Cython
@@ -11,3 +12,4 @@ Flask
 flask-cors
 nltk
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.0/en_core_web_sm-3.4.0-py3-none-any.whl
+https://github.com/explosion/spacy-experimental/releases/download/v0.6.0/en_coreference_web_trf-3.4.0a0-py3-none-any.whl

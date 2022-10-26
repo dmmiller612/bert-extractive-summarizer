@@ -13,7 +13,7 @@ class SBertSummarizer(SummaryProcessor):
     def __init__(
         self,
         model: str = 'all-mpnet-base-v2',
-        sentence_handler: SentenceHandler = SentenceHandler(),
+        sentence_handler: SentenceHandler = None,
         random_state: int = 12345
     ):
         """
@@ -23,6 +23,8 @@ class SBertSummarizer(SummaryProcessor):
         :sentence_handler: The handler to process sentences. If want to use coreference, instantiate and pass.
         :param random_state: The random state to reproduce summarizations.
         """
+        if sentence_handler is None:
+            sentence_handler = SentenceHandler()
         model_func = SBertEmbedding(model)
         super().__init__(
             model=model_func, sentence_handler=sentence_handler, random_state=random_state

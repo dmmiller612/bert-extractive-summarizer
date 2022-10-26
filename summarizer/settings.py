@@ -20,6 +20,7 @@ USE_FIRST_SENTENCE = bool(os.environ.get("USE_FIRST_SENTENCE", True))
 DEFAULT_MODEL = os.environ.get("DEFAULT_MODEL", "distilbert-base-uncased")
 DEFAULT_SBERT_MODEL = os.environ.get("DEFAULT_SBERT_MODEL", "paraphrase-MiniLM-L6-v2")
 DEFAULT_ENGINE = os.environ.get("DEFAULT_ENGINE", "sbert")
+USE_COREFERENCE = bool(os.environ.get("USE_COREFERENCE"))
 
 HIDDEN = int(os.environ.get("HIDDEN", -2))
 REDUCE = os.environ.get("REDUCE", "mean")

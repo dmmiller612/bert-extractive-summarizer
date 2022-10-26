@@ -10,6 +10,7 @@ from typing import List
 import hashlib
 from summarizer import Summarizer, settings
 from summarizer.sbert import SBertSummarizer
+from summarizer.text_processors.coreference_handler import CoreferenceHandler
 
 
 def make_cache_key():
@@ -58,20 +59,24 @@ CORS(app)
 cache.init_app(app)
 limiter.init_app(app)
 
+handler = CoreferenceHandler() if settings.USE_COREFERENCE else None
 summarizer = Summarizer(
     model=settings.DEFAULT_MODEL,
     hidden=int(settings.HIDDEN),
-    reduce_option=settings.REDUCE
+    reduce_option=settings.REDUCE,
+    sentence_handler=handler
 )
 
 sbert_summarizer = SBertSummarizer(
-    model=settings.DEFAULT_SBERT_MODEL
+    model=settings.DEFAULT_SBERT_MODEL,
+    sentence_handler=handler
 )
 
 app.logger.info("Confirming environment ...")
 app.logger.info(settings.APP_ENV)
 app.logger.info(settings.APP_VERSION)
 
+app.logger.info(f"Using Coreference Engine: {settings.USE_COREFERENCE}")
 app.logger.info(f"Using Model: {settings.DEFAULT_MODEL}")
 app.logger.info(f"Using SBert Model: {settings.DEFAULT_SBERT_MODEL}")
 

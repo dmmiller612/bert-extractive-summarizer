@@ -60,7 +60,7 @@ class Summarizer(BertSummarizer):
         custom_tokenizer: PreTrainedTokenizer = None,
         hidden: Union[List[int], int] = -2,
         reduce_option: str = 'mean',
-        sentence_handler: SentenceHandler = SentenceHandler(),
+        sentence_handler: SentenceHandler = None,
         random_state: int = 12345,
         hidden_concat: bool = False,
         gpu_id: int = 0,
@@ -77,7 +77,8 @@ class Summarizer(BertSummarizer):
         :param hidden_concat: Whether or not to concat multiple hidden layers.
         :param gpu_id: GPU device index if CUDA is available. 
         """
-
+        if sentence_handler is None:
+            sentence_handler = SentenceHandler()
         super(Summarizer, self).__init__(
             model, custom_model, custom_tokenizer, hidden, reduce_option, sentence_handler, random_state, hidden_concat,
             gpu_id

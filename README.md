@@ -23,8 +23,9 @@ Paper: https://arxiv.org/abs/1906.04165
    1. [Simple Example](#simple-example)
    2. [SBert](#use-sbert)
    3. [Retrieve Embeddings](#retrieve-embeddings)
-   4. [Custom Model Example](#custom-model-example)
-   5. [Large Example](#large-example)
+   4. [Use Coreference](#use-coreference)
+   5. [Custom Model Example](#custom-model-example)
+   6. [Large Example](#large-example)
 3. [Calculating Elbow](#calculating-elbow)
 4. [Running the Service](#running-the-service)
 
@@ -103,6 +104,31 @@ model = Summarizer()
 result = model.run_embeddings(body, ratio=0.2)  # Specified with ratio. 
 result = model.run_embeddings(body, num_sentences=3)  # Will return (3, N) embedding numpy matrix.
 result = model.run_embeddings(body, num_sentences=3, aggregate='mean')  # Will return Mean aggregate over embeddings. 
+```
+
+### Use Coreference
+First ensure you have installed neuralcoref and spacy. It is worth noting that neuralcoref does not work with spacy > 0.2.1.
+```bash
+pip install spacy
+pip install transformers
+pip install https://github.com/explosion/spacy-experimental/releases/download/v0.6.0/en_coreference_web_trf-3.4.0a0-py3-none-any.whl
+python -m spacy download en_core_web_md
+```
+
+Then to use coreference, run the following:
+
+```python
+from summarizer import Summarizer
+from summarizer.text_processors.coreference_handler import CoreferenceHandler
+handler = CoreferenceHandler()
+# How coreference works:
+# >>>handler.process('''My sister has a dog. She loves him.''', min_length=2)
+# ['My sister has a dog.', 'My sister loves a dog.']
+body = 'Text body that you want to summarize with BERT'
+body2 = 'Something else you want to summarize with BERT'
+model = Summarizer(sentence_handler=handler)
+model(body)
+model(body2)
 ```
 
 ### Custom Model Example

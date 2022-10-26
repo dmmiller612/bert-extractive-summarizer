@@ -14,18 +14,9 @@ class SentenceHandler(SentenceABC):
 
         :param language: Determines the language to use with spacy.
         """
-        nlp = language()
-
-        is_spacy_3 = False
-        try:
-            # Supports spacy 2.0
-            nlp.add_pipe(nlp.create_pipe('sentencizer'))
-        except Exception:
-            # Supports spacy 3.0
-            nlp.add_pipe("sentencizer")
-            is_spacy_3 = True
-
-        super().__init__(nlp, is_spacy_3)
+        nlp = language(disable=["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer", "ner"])
+        nlp.add_pipe("sentencizer")
+        super().__init__(nlp)
 
     def process(
         self, body: str, min_length: int = 40, max_length: int = 600

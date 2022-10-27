@@ -27,7 +27,8 @@ def test_possessive_coreference_handler(coreference_handler):
     orig = "The government announced the new policy on Wednesday. " \
            "Their spokesperson, Angela Smith, said that they had listened to all proposals."
     resolved = "The government announced the new policy on Wednesday. " \
-               "The government\u2019s spokesperson, Angela Smith, said that The government had listened to all proposals."
+               "The government\u2019s spokesperson, Angela Smith, said that The government had " \
+               "listened to all proposals."
     result = coreference_handler.process(orig, min_length=2)
     assert " ".join(result) == resolved
 
@@ -39,8 +40,34 @@ def test_possessive_coreference_handler_2(coreference_handler):
     assert " ".join(result) == resolved
 
 
+def test_possessive_coreference_handler_3(coreference_handler):
+    orig = "The government's handling of the announcement was poor. " \
+           "Their spokesperson, Angela Smith, said that they had listened to all proposals."
+    resolved = "The government's handling of the announcement was poor. " \
+               "The government's spokesperson, Angela Smith, said that The government had " \
+               "listened to all proposals."
+    result = coreference_handler.process(orig, min_length=2)
+    assert " ".join(result) == resolved
+
+
+def test_possessive_coreference_handler_4(coreference_handler):
+    orig = "Anna wrote to Tom. Tom is Anna's brother. He is living in New York."
+    resolved = "Anna wrote to Tom. Tom is Anna\u2019s brother. Tom is living in New York."
+    result = coreference_handler.process(orig, min_length=2)
+    assert " ".join(result) == resolved
+
+
 def test_overlapping_coreference_handler(coreference_handler):
-    orig = """Fidel Castro led a communist revolution that toppled the Cuban government in 1959, after which he declared himself prime minister. He held the title until 1976, when it was abolished and he became head of the Communist Party and president of the council of state and the council of ministers. With his health failing, Castro handed power to his brother, Raúl, in 2006. He died in 2016."""
-    resolved = "Fidel Castro led a communist revolution that toppled the Cuban government in 1959, after which Fidel Castro declared Fidel Castro prime minister. Fidel Castro held himself prime minister until 1976, when himself prime minister was abolished and Fidel Castro became head of the Communist Party and president of the council of state and the council of ministers. With Fidel Castro\u2019s health failing, Fidel Castro handed power to Fidel Castro\u2019s brother, Raúl, in 2006. Fidel Castro died in 2016."
+    orig = "Fidel Castro led a communist revolution that toppled the Cuban government in 1959, " \
+           "after which he declared himself prime minister. He held the title until 1976, when it was " \
+           "abolished and he became head of the Communist Party and president of the council of state and " \
+           "the council of ministers. With his health failing, Castro handed power to his brother, " \
+           "Raúl, in 2006. He died in 2016."
+    resolved = "Fidel Castro led a communist revolution that toppled the Cuban government in 1959, " \
+               "after which Fidel Castro declared Fidel Castro prime minister. Fidel Castro held himself prime " \
+               "minister until 1976, when himself prime minister was abolished and Fidel Castro became head of the " \
+               "Communist Party and president of the council of state and the council of ministers. " \
+               "With Fidel Castro\u2019s health failing, Fidel Castro handed power to Fidel Castro\u2019s brother, " \
+               "Raúl, in 2006. Fidel Castro died in 2016."
     result = coreference_handler.process(orig, min_length=2)
     assert " ".join(result) == resolved

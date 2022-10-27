@@ -18,7 +18,7 @@ class CoreferenceHandler(SentenceABC):
         self, spacy_model: str = DEFAULT_MODEL
     ):
         """
-        Coreferennce handler. Updated to work with spacy > 3.0.
+        Coreference handler. Updated to work with spacy > 3.0.
 
         :param spacy_model: The spacy model to use as default.
         """

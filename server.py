@@ -51,13 +51,17 @@ class Parser(object):
         sentences: List[str] = self.run()
         return ' '.join([sentence.strip() for sentence in sentences]).strip()
 
+
 @app.route('/', methods=['GET'])
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/summarize_by_ratio', methods=['POST'])
+
+@app.route('/summarize', methods=['POST'])
 def convert_raw_text_by_ratio():
     ratio = float(request.args.get('ratio', 0.2))
+    sentences = request.args.get('num_sentences')
+    num_sentences = int(sentences) if sentences else None
     min_length = int(request.args.get('min_length', 25))
     max_length = int(request.args.get('max_length', 500))
 
@@ -66,24 +70,7 @@ def convert_raw_text_by_ratio():
         abort(make_response(jsonify(message="Request must have raw text"), 400))
 
     parsed = Parser(data).convert_to_paragraphs()
-    summary = summarizer(parsed, ratio=ratio, min_length=min_length, max_length=max_length)
-
-    return jsonify({
-        'summary': summary
-    })
-
-@app.route('/summarize_by_sentence', methods=['POST'])
-def convert_raw_text_by_sent():
-    num_sentences = int(request.args.get('num_sentences', 5))
-    min_length = int(request.args.get('min_length', 25))
-    max_length = int(request.args.get('max_length', 500))
-
-    data = request.data
-    if not data:
-        abort(make_response(jsonify(message="Request must have raw text"), 400))
-
-    parsed = Parser(data).convert_to_paragraphs()
-    summary = summarizer(parsed, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
+    summary = summarizer(parsed, ratio=ratio, num_sentences=num_sentences, min_length=min_length, max_length=max_length)
 
     return jsonify({
         'summary': summary

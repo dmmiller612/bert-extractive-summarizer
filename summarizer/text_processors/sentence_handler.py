@@ -39,4 +39,8 @@ class SentenceHandler(SentenceABC):
         :return: Returns a list of sentences.
         """
         doc = self.nlp(body)
-        return self.sentence_processor(doc, min_length, max_length)
+        
+        sentences = self.sentence_processor(doc, min_length, max_length)
+        unique_sentences = list(dict.fromkeys([s.strip() for s in sentences]))
+        
+        return unique_sentences

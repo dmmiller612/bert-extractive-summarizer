@@ -40,6 +40,23 @@ def test_possessive_coreference_handler_2(coreference_handler):
     assert " ".join(result) == resolved
 
 
+def test_possessive_coreference_handler_3(coreference_handler):
+    orig = "The government's handling of the announcement was poor. " \
+           "Their spokesperson, Angela Smith, said that they had listened to all proposals."
+    resolved = "The government's handling of the announcement was poor. " \
+               "The government's spokesperson, Angela Smith, said that The government had " \
+               "listened to all proposals."
+    result = coreference_handler.process(orig, min_length=2)
+    assert " ".join(result) == resolved
+
+
+def test_possessive_coreference_handler_4(coreference_handler):
+    orig = "Anna wrote to Tom. Tom is Anna's brother. He is living in New York."
+    resolved = "Anna wrote to Tom. Tom is Anna\u2019s brother. Tom is living in New York."
+    result = coreference_handler.process(orig, min_length=2)
+    assert " ".join(result) == resolved
+
+
 def test_overlapping_coreference_handler(coreference_handler):
     orig = "Fidel Castro led a communist revolution that toppled the Cuban government in 1959, " \
            "after which he declared himself prime minister. He held the title until 1976, when it was " \

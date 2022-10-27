@@ -3,7 +3,7 @@
 from typing import List
 
 import spacy
-
+import re
 from summarizer.text_processors.sentence_abc import SentenceABC
 from summarizer.text_processors.sentence_handler import SentenceHandler
 
@@ -46,8 +46,14 @@ class CoreferenceHandler(SentenceABC):
         for span in sorted(reindex, key=lambda x: x[0]):
             antecedent = span[2]
             coreferent = span[3]
-            if coreferent in {'its', 'his', 'her', 'their', 'His', 'Her', 'Their', 'Its'}:
-                antecedent = antecedent + "\u2019s"
+            antecedent_is_possessive = re.match(r".+['\u2019]s$", antecedent)
+            coreferent_is_possessive = re.match(r"^([Ii]ts|[Hh]is|[Hh]er|[Tt]heir|.+['\u2019]s)$", coreferent)
+            # Add possessive to antecedent if resolving in a possessive context
+            if coreferent_is_possessive and not antecedent_is_possessive:
+                    antecedent = antecedent + "\u2019s"
+            # Remove possessive from resolved antecedent if not resolving in a possessive context
+            elif antecedent_is_possessive and not coreferent_is_possessive:
+                antecedent = re.sub(r"['\u2019]s$", "", antecedent)
             resolved_text = resolved_text[0:span[0] + offset] + antecedent + resolved_text[span[1] + offset:]
             offset += len(antecedent) - (span[1] - span[0])
 

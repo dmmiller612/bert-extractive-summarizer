@@ -162,4 +162,4 @@ class ClusterFeatures:
         :param num_sentences: Number of sentences. Overrides ratio.
         :return: Sentences index that qualify for summary.
         """
-        return self.cluster(ratio)
+        return self.cluster(ratio, num_sentences)
